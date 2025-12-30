@@ -32,7 +32,7 @@
         <div class="dashboard-header">
             <div class="welcome-msg">
                 <h2 id="tituloSaudacao">Olá, Gestor</h2>
-                <p>Danillo & Ketlyn</p>
+                <p>Bem vindo a sua central financeira</p>
             </div>
             <a href="#" id="linkPlanilha" target="_blank" class="btn-planilha">
                 <span id="txtPlanilha">Sincronizando...</span>
@@ -42,23 +42,23 @@
         <div class="action-grid">
             <button class="action-card" data-bs-toggle="modal" data-bs-target="#modalGasto">
                 <div class="btn-icon label-gasto">📉</div>
-                <h3>Lançar Despesa</h3>
-                <p>Registrar saída operacional ou encargos fixos.</p>
-                <span class="fw-bold text-primary" style="font-size: 0.65rem;">LANÇAR AGORA →</span>
+                <h3>Adicionar gastos</h3>
+                <p>Registrar gastos do dia a dia e contas fixas.</p>
+                <span class="fw-bold text-primary" style="font-size: 0.65rem;">REGISTRAR →</span>
             </button>
 
             <button class="action-card" data-bs-toggle="modal" data-bs-target="#modalRenda">
                 <div class="btn-icon label-renda">💰</div>
-                <h3>Lançar Receita</h3>
-                <p>Registrar entrada de capital ou proventos.</p>
-                <span class="fw-bold text-primary" style="font-size: 0.65rem;">LANÇAR AGORA →</span>
+                <h3>Adicionar renda</h3>
+                <p>Registrar entrada de salário e renda extra.</p>
+                <span class="fw-bold text-primary" style="font-size: 0.65rem;">REGISTRAR →</span>
             </button>
 
             <button class="action-card" data-bs-toggle="modal" data-bs-target="#modalReserva">
                 <div class="btn-icon label-reserva">🏦</div>
-                <h3>Patrimônio</h3>
-                <p>Registrar aportes em reserva ou investimentos.</p>
-                <span class="fw-bold text-primary" style="font-size: 0.65rem;">LANÇAR AGORA →</span>
+                <h3>Reserva</h3>
+                <p>Registrar reservas, investimentos e metas financeiras.</p>
+                <span class="fw-bold text-primary" style="font-size: 0.65rem;">REGISTRAR →</span>
             </button>
         </div>
     </div>
@@ -67,7 +67,7 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h6 class="fw-bold m-0 text-uppercase">Nova Despesa</h6><button type="button" class="btn-close"
+                    <h6 class="fw-bold m-0 text-uppercase">Novo gasto</h6><button type="button" class="btn-close"
                         data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
@@ -83,11 +83,18 @@
 
                     <label class="form-label">Categoria</label>
                     <select id="catGasto" class="form-select">
-                        <option value="Alimentação 🍝">Alimentação</option>
-                        <option value="Transporte 🚗">Logística/Transporte</option>
-                        <option value="Lazer 🤸‍♂️">Lazer/Networking</option>
-                        <option value="Fatura 💳">Contas Fixas</option>
-                        <option value="Outro">Outros Encargos</option>
+                        <option value="Alimentação 🍝">Alimentação 🍝</option>
+                        <option value="Transporte 🚗">Transporte 🚗</option>
+                        <option value="Lazer 🤸‍♂️">Lazer 🤸‍♂️</option>
+                        <option value="Fatura 💳">Fatura 💳</option>
+                        <option value="Serviço de internet 🛜">Serviço de Internet 🛜</option>
+                        <option value="Parcela 📄">Parcela 📄</option>
+                        <option value="Roupas 👕">Roupas 👕</option>
+                        <option value="Material de trabalho 📐">Material de trabalho 📐</option>
+                        <option value="Viajem ✈️">Viajem ✈️</option>
+                        <option value="Criança 🧒🏼">Criança 🧒🏼</option>
+                        <option value="Feira 🥩">Feira 🥩</option>
+                        <option value="Shopee 🛍️">Shopee 🛍️</option>
                     </select>
 
                     <label class="form-label">Pagamento</label>
@@ -96,10 +103,12 @@
                         <option value="Crédito">Crédito</option>
                         <option value="Débito">Débito</option>
                         <option value="Boleto">Boleto</option>
+                        <option value="Dinheiro">Dinheiro</option>
                     </select>
 
-                    <button onclick="enviar('gasto')" id="btnSalvarGasto" class="btn-submit-pro">PROCESSAR
-                        LANÇAMENTO</button>
+                    <button onclick="enviar('gasto')" id="btnSalvarGasto" class="btn-submit-pro">
+                        ENVIAR
+                    </button>
                 </div>
             </div>
         </div>
@@ -109,11 +118,11 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h6 class="fw-bold m-0 text-uppercase">Nova Receita</h6><button type="button" class="btn-close"
+                    <h6 class="fw-bold m-0 text-uppercase">Adicionar renda</h6><button type="button" class="btn-close"
                         data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <label class="form-label">Origem</label>
+                    <label class="form-label">Descrição</label>
                     <select id="catRenda" class="form-select">
                         <option value="Salário">Salário</option>
                         <option value="Extra">Extra</option>
@@ -121,7 +130,7 @@
                     <label class="form-label">Valor</label>
                     <input type="number" id="valRenda" class="form-control" placeholder="0,00">
                     <button onclick="enviar('renda')" id="btnSalvarRenda" class="btn-submit-pro"
-                        style="background: #059669;">EFETIVAR RECEITA</button>
+                        style="background: #059669;">ENVIAR</button>
                 </div>
             </div>
         </div>
