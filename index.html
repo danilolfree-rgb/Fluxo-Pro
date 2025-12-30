@@ -96,9 +96,8 @@
       const titulo = document.getElementById('tituloForm');
       const cat = document.getElementById('selectCat');
       
-      modal.style.display = 'flex';
-      document.getElementById('tipoLancamento').value = tipo;
-      sincronizarMes();
+      const modal = document.getElementById('modalOverlay');
+      modal.style.display = 'flex'; // O FLEX é o que ativa o alinhamento centralizado
 
       // Reset de campos
       cat.innerHTML = "";

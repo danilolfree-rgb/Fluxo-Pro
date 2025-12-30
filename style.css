@@ -102,18 +102,22 @@ body {
     font-size: 20px;
 }
 
-/* MODAL (Interface de Lançamento) */
+/* Fundo escuro (Overlay) */
 .modal-overlay {
     position: fixed;
-    inset: 0;
-    background: rgba(15, 23, 42, 0.7);
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(15, 23, 42, 0.8); /* Escurece mais para dar foco */
     backdrop-filter: blur(4px);
-    display: none;
-    align-items: flex-end; /* Abre de baixo para cima no celular */
+    display: none; /* Inicialmente escondido */
+    align-items: flex-end; /* No celular, o formulário sobe do rodapé */
     justify-content: center;
-    z-index: 1500;
+    z-index: 2000; /* Garante que fique acima de tudo */
 }
 
+/* Caixa Branca com os inputs (Content) */
 .modal-content {
     background: white;
     width: 100%;
@@ -121,7 +125,9 @@ body {
     padding: 30px 25px;
     border-top-left-radius: 30px;
     border-top-right-radius: 30px;
-    animation: slideUp 0.3s ease-out;
+    z-index: 2001; /* MAIOR que o overlay */
+    position: relative;
+    box-shadow: 0 -10px 25px rgba(0,0,0,0.1);
 }
 
 @keyframes slideUp {
