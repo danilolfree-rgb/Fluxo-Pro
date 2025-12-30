@@ -1,13 +1,13 @@
 {
-  "name": "Nexus Finance",
-  "short_name": "Nexus",
+  "name": "Aura Controle Financeiro",
+  "short_name": "Aura",
   "start_url": "index.html",
   "display": "standalone",
-  "background_color": "#1e293b",
-  "theme_color": "#1e293b",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
   "icons": [
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/5511/5511358.png",
+      "src": "assets/logo/icon.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"

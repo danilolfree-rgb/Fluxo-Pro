@@ -1,223 +1,241 @@
 :root {
-  --brand-primary: #1e293b;
-  --brand-accent: #0284c7;
-  --bg-soft: #f8fafc;
+  --glass: rgba(30, 41, 59, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --aura-effect: linear-gradient(135deg, #38bdf8 0%, #818cf8 100%);
+  --accent: #38bdf8;
+  --bg-dark: #0f172a;
 }
 
 body {
-  background-color: var(--bg-soft);
+  background: radial-gradient(circle at top right, #1e293b, #0f172a);
+  color: #f8fafc;
   font-family: 'Plus Jakarta Sans', sans-serif;
-  color: var(--brand-primary);
-  font-size: 0.85rem;
+  font-size: 0.82rem;
+  min-height: 100vh;
+  margin: 0;
   overscroll-behavior-y: contain;
-  -webkit-tap-highlight-color: transparent;
-  user-select: none;
 }
 
-/* Estilização Premium do Seletor de Mês */
-.month-selector-wrapper {
-  position: relative;
+/* Navbar Aura */
+.navbar-aura {
+  background: rgba(15, 23, 42, 0.8);
+  backdrop-filter: blur(15px);
+  border-bottom: 1px solid var(--glass-border);
+  padding: 15px 0;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.nav-container {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-}
-
-.month-selector-wrapper::before {
-  content: '📅';
-  position: absolute;
-  left: 10px;
-  font-size: 0.75rem;
-  pointer-events: none;
-  opacity: 0.6;
-}
-
-#mesGlobal {
-  appearance: none;
-  /* Remove a seta padrão */
-  -webkit-appearance: none;
-  background-color: #f1f5f9;
-  border: 1px solid #e2e8f0;
-  border-radius: 20px;
-  /* Bordas arredondadas estilo pílula */
-  padding: 5px 12px 5px 28px;
-  font-size: 0.7rem;
-  font-weight: 700;
-  color: var(--brand-primary);
-  cursor: pointer;
-  transition: all 0.2s ease;
-  width: 120px;
-  text-align: center;
-}
-
-#mesGlobal:hover {
-  background-color: #e2e8f0;
-  border-color: var(--brand-accent);
-}
-
-#mesGlobal:focus {
-  outline: none;
-  box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.1);
-}
-
-.navbar-minimal {
-  background: #fff;
-  padding: 10px 0;
-  border-bottom: 1px solid #e2e8f0;
-  margin-bottom: 25px;
-  padding-top: env(safe-area-inset-top);
-}
-
-.container-app {
-  max-width: 850px;
+  max-width: 800px;
   margin: 0 auto;
   padding: 0 20px;
 }
 
-.dashboard-header {
+/* Logo Tipo Aura */
+.logo-aura {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  gap: 8px;
+  font-weight: 800;
+  font-size: 1rem;
+  letter-spacing: 1px;
 }
 
-.welcome-msg h2 {
+.logo-icon {
+  width: 22px;
+  height: 22px;
+  background: var(--aura-effect);
+  border-radius: 6px;
+  position: relative;
+}
+
+.logo-icon::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 6px;
+  filter: blur(8px);
+  background: var(--aura-effect);
+  opacity: 0.6;
+}
+
+#mesGlobal {
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  color: var(--accent);
+  border-radius: 50px;
+  padding: 5px 15px;
+  font-size: 0.7rem;
   font-weight: 700;
-  font-size: 1.1rem;
+  outline: none;
+  cursor: pointer;
+}
+
+.container-app {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.header-section {
+  margin: 35px 0;
+}
+
+.header-section h2 {
+  font-weight: 800;
+  font-size: 1.3rem;
   margin: 0;
   letter-spacing: -0.5px;
 }
 
-.welcome-msg p {
-  color: #64748b;
+.header-section p {
+  color: #94a3b8;
   font-size: 0.75rem;
-  margin: 0;
+  margin-top: 4px;
 }
 
 .btn-planilha {
-  background-color: #fff;
-  color: var(--brand-primary);
-  border: 1px solid #e2e8f0;
-  padding: 6px 12px;
-  border-radius: 6px;
-  font-weight: 600;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--glass-border);
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 10px;
   font-size: 0.7rem;
+  font-weight: 600;
   text-decoration: none;
-  transition: 0.2s;
-  opacity: 0.5;
-  pointer-events: none;
+  transition: 0.3s;
 }
 
-.btn-planilha.ativo {
-  opacity: 1;
-  pointer-events: auto;
+.btn-planilha:hover {
+  background: var(--accent);
+  color: #0f172a;
+  border-color: var(--accent);
 }
 
+/* Cards Estilo Aura */
 .action-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 12px;
+  gap: 15px;
 }
 
 .action-card {
-  background: #fff;
-  border: 1px solid #e2e8f0;
-  border-radius: 10px;
-  padding: 15px;
-  transition: all 0.2s;
-  cursor: pointer;
+  background: var(--glass);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  padding: 22px;
   text-align: left;
-  width: 100%;
+  transition: 0.3s;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
 }
 
-.action-card:active {
-  transform: scale(0.98);
-  background: #f1f5f9;
+.action-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-4px);
 }
 
-.action-card h3 {
-  font-size: 0.85rem;
-  font-weight: 700;
-  margin-bottom: 4px;
+.action-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(56, 189, 248, 0.05) 0%, transparent 70%);
+  pointer-events: none;
 }
 
-.action-card p {
-  font-size: 0.7rem;
-  color: #64748b;
-  margin-bottom: 10px;
-  line-height: 1.3;
-}
-
-.btn-icon {
-  width: 32px;
-  height: 32px;
-  background: #f1f5f9;
-  border-radius: 6px;
+.card-icon {
+  font-size: 1.3rem;
+  margin-bottom: 15px;
+  background: rgba(255, 255, 255, 0.05);
+  width: 45px;
+  height: 45px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.9rem;
-  margin-bottom: 10px;
+  border-radius: 12px;
 }
 
-.label-gasto {
-  color: #dc2626;
+.action-card h3 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 6px;
 }
 
-.label-renda {
-  color: #059669;
+.action-card p {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  margin-bottom: 18px;
+  line-height: 1.4;
 }
 
-.label-reserva {
-  color: #4f46e5;
+.btn-action-text {
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
+/* Modais */
 .modal-content {
-  border-radius: 10px;
-  border: none;
+  background: #161e2e;
+  color: #fff;
+  border: 1px solid var(--glass-border);
+  border-radius: 24px;
 }
 
 .modal-header {
-  padding: 12px 18px;
-  border-bottom: 1px solid #f1f5f9;
-}
-
-.modal-header h6 {
-  font-size: 0.8rem;
-  letter-spacing: 0.5px;
-}
-
-.modal-body {
-  padding: 18px;
+  border-bottom: 1px solid var(--glass-border);
+  padding: 20px;
 }
 
 .form-label {
-  font-weight: 700;
   font-size: 0.65rem;
+  font-weight: 700;
   color: #64748b;
   text-transform: uppercase;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
 }
 
 .form-control,
 .form-select {
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  padding: 7px 10px;
-  border-radius: 5px;
-  margin-bottom: 8px;
-  font-size: 0.8rem;
-  user-select: text;
+  background: #0f172a;
+  border: 1px solid var(--glass-border);
+  color: #fff;
+  font-size: 0.85rem;
+  padding: 12px;
+  border-radius: 12px;
+  margin-bottom: 15px;
 }
 
-.btn-submit-pro {
-  background: var(--brand-primary);
+.form-control:focus {
+  background: #0f172a;
   color: #fff;
-  width: 100%;
-  padding: 8px;
-  border-radius: 5px;
-  font-weight: 600;
+  border-color: var(--accent);
+  box-shadow: none;
+}
+
+.btn-submit {
+  background: var(--aura-effect);
+  color: #fff;
+  font-weight: 800;
   border: none;
-  font-size: 0.75rem;
+  padding: 14px;
+  border-radius: 14px;
+  width: 100%;
+  font-size: 0.8rem;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
   margin-top: 10px;
+  box-shadow: 0 4px 15px rgba(56, 189, 248, 0.2);
 }
