@@ -96,9 +96,9 @@
       const titulo = document.getElementById('tituloForm');
       const cat = document.getElementById('selectCat');
       
-      document.getElementById('modalOverlay').style.display = 'none';
-      document.getElementById('meuForm').reset();
-      
+      const modal = document.getElementById('modalOverlay');
+      modal.style.display = 'flex'; // O FLEX é o que ativa o alinhamento centralizado
+
       // Reset de campos
       cat.innerHTML = "";
       document.getElementById('gDesc').style.display = 'block';
