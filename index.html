@@ -2,28 +2,28 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Nexus Finance</title>
   
-  <link rel="manifest" href='data:application/json,{"name":"Nexus Finance","short_name":"Nexus","start_url":"/","display":"standalone","background_color":"#1e293b","theme_color":"#1e293b","icons":[{"src":"https://cdn-icons-png.flaticon.com/512/5511/5511358.png","sizes":"512x512","type":"image/png"}]}'>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#1e293b">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
 
   <style>
-    body, html { margin: 0; padding: 0; height: 100%; width: 100%; overflow: hidden; background: #1e293b; }
-    iframe { width: 100%; height: 100%; border: none; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body, html { height: 100%; width: 100%; overflow: hidden; background-color: #1e293b; }
+    iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
   </style>
 </head>
 <body>
   <iframe src="https://script.google.com/macros/s/AKfycbxTVeQzKlWiaaSuAnEVkitgqkPag-KayjBEYiirnWpBSYpKSaqYuU9YEXag4Eel6MBZ/exec"></iframe>
 
   <script>
-    // Registro do Service Worker via Data URI para facilitar
+    // Registro do Service Worker real
     if ('serviceWorker' in navigator) {
-      const swCode = "self.addEventListener('fetch', function(event) {});";
-      const blob = new Blob([swCode], {type: 'application/javascript'});
-      const swUrl = URL.createObjectURL(blob);
-      navigator.serviceWorker.register(swUrl).then(() => {
-        console.log('App pronto para ser instalado!');
-      });
+      navigator.serviceWorker.register('sw.js')
+        .then(() => console.log("Service Worker registrado com sucesso!"));
     }
   </script>
 </body>
