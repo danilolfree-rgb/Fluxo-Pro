@@ -1,30 +1,102 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>Nexus Finance</title>
-  
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#1e293b">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body, html { height: 100%; width: 100%; overflow: hidden; background-color: #1e293b; }
-    iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Nexus Finance</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
-  <iframe src="https://script.google.com/macros/s/AKfycbxTVeQzKlWiaaSuAnEVkitgqkPag-KayjBEYiirnWpBSYpKSaqYuU9YEXag4Eel6MBZ/exec"></iframe>
 
-  <script>
-    // Registro do Service Worker real
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('sw.js')
-        .then(() => console.log("Service Worker registrado com sucesso!"));
-    }
-  </script>
+    <div id="loading">
+        <div style="font-size: 40px;">🚀</div>
+        <p>Salvando na Planilha...</p>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h2>Nexus Finance</h2>
+            <p style="color: #64748b; margin-top: 5px;">Sistema de Gestão</p>
+        </div>
+
+        <div class="card">
+            <label style="font-size: 11px; font-weight: 800; color: #94a3b8; text-transform: uppercase;">Selecione o Mês</label>
+            <select id="mesGlobal" style="width: 100%; border: none; font-size: 18px; font-weight: 700; color: var(--primary); background: transparent; outline: none;">
+                <option>Janeiro</option><option>Fevereiro</option><option>Março</option>
+                <option>Abril</option><option>Maio</option><option>Junho</option>
+                <option>Julho</option><option>Agosto</option><option>Setembro</option>
+                <option>Outubro</option><option>Novembro</option><option>Dezembro</option>
+            </select>
+        </div>
+
+        <div class="menu-grid">
+            <button class="btn btn-renda" onclick="novoLancamento('renda')">
+                <div class="icon">💰</div> Renda Extra
+            </button>
+            <button class="btn btn-gasto" onclick="novoLancamento('gasto')">
+                <div class="icon">💸</div> Lançar Gasto
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyfvnnn89Qh8bfb8lDdML_AVauQo5s4gYhQqPNyibldfjtiPx0oebNaCpVbMcIgoCTQ/exec"; // <--- COLOQUE O LINK /EXEC AQUI
+
+        async function novoLancamento(tipo) {
+            const { value: formValues } = await Swal.fire({
+                title: tipo === 'renda' ? 'Nova Renda' : 'Novo Gasto',
+                html:
+                    '<input id="swal-val" class="swal2-input" placeholder="Valor R$" type="number">' +
+                    '<input id="swal-desc" class="swal2-input" placeholder="Descrição">',
+                focusConfirm: false,
+                showCancelButton: true,
+                confirmButtonText: 'Salvar',
+                confirmButtonColor: tipo === 'renda' ? '#10b981' : '#ef4444',
+                preConfirm: () => {
+                    return [
+                        document.getElementById('swal-val').value,
+                        document.getElementById('swal-desc').value
+                    ]
+                }
+            });
+
+            if (formValues && formValues[0]) {
+                enviarParaGoogle(tipo, formValues[0], formValues[1]);
+            }
+        }
+
+        async function enviarParaGoogle(tipo, valor, desc) {
+            document.getElementById('loading').style.display = 'flex';
+            const mes = document.getElementById('mesGlobal').value;
+
+            const dados = {
+                tipo: tipo,
+                mes: mes,
+                valor: valor,
+                categoria: tipo === 'renda' ? 'Extra' : 'Geral',
+                descricao: desc || 'Sem descrição'
+            };
+
+            try {
+                await fetch(WEB_APP_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    body: JSON.stringify(dados)
+                });
+                Swal.fire('Pronto!', 'Dados salvos com sucesso.', 'success');
+            } catch (e) {
+                Swal.fire('Erro', 'Falha ao conectar com a planilha', 'error');
+            } finally {
+                document.getElementById('loading').style.display = 'none';
+            }
+        }
+
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js');
+        }
+    </script>
 </body>
 </html>
