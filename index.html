@@ -1,102 +1,161 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Nexus Finance</title>
-    <link rel="manifest" href="manifest.json">
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Nexus Finance</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
 
-    <div id="loading">
-        <div style="font-size: 40px;">🚀</div>
-        <p>Salvando na Planilha...</p>
+  <div id="loading" style="display:none; position:fixed; inset:0; background:rgba(255,255,255,0.8); z-index:2000; flex-direction:column; align-items:center; justify-content:center;">
+    <div style="font-size: 40px;">🚀</div>
+    <p><b>Enviando para Planilha...</b></p>
+  </div>
+
+  <div class="container">
+    <div class="header">
+      <h2>Nexus Finance</h2>
+      <p>Gestão de Capital Premium</p>
     </div>
 
-    <div class="container">
-        <div class="header">
-            <h2>Nexus Finance</h2>
-            <p style="color: #64748b; margin-top: 5px;">Sistema de Gestão</p>
-        </div>
-
-        <div class="card">
-            <label style="font-size: 11px; font-weight: 800; color: #94a3b8; text-transform: uppercase;">Selecione o Mês</label>
-            <select id="mesGlobal" style="width: 100%; border: none; font-size: 18px; font-weight: 700; color: var(--primary); background: transparent; outline: none;">
-                <option>Janeiro</option><option>Fevereiro</option><option>Março</option>
-                <option>Abril</option><option>Maio</option><option>Junho</option>
-                <option>Julho</option><option>Agosto</option><option>Setembro</option>
-                <option>Outubro</option><option>Novembro</option><option>Dezembro</option>
-            </select>
-        </div>
-
-        <div class="menu-grid">
-            <button class="btn btn-renda" onclick="novoLancamento('renda')">
-                <div class="icon">💰</div> Renda Extra
-            </button>
-            <button class="btn btn-gasto" onclick="novoLancamento('gasto')">
-                <div class="icon">💸</div> Lançar Gasto
-            </button>
-        </div>
+    <div class="mes-card">
+      <label>MÊS DE REFERÊNCIA</label>
+      <select id="mesGlobal" onchange="sincronizarMes()">
+        <option value="Janeiro">Janeiro</option>
+        <option value="Fevereiro">Fevereiro</option>
+        <option value="Março">Março</option>
+        <option value="Abril">Abril</option>
+        <option value="Maio">Maio</option>
+        <option value="Junho">Junho</option>
+        <option value="Julho">Julho</option>
+        <option value="Agosto">Agosto</option>
+        <option value="Setembro">Setembro</option>
+        <option value="Outubro">Outubro</option>
+        <option value="Novembro">Novembro</option>
+        <option value="Dezembro">Dezembro</option>
+      </select>
     </div>
 
-    <script>
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyfvnnn89Qh8bfb8lDdML_AVauQo5s4gYhQqPNyibldfjtiPx0oebNaCpVbMcIgoCTQ/exec"; // <--- COLOQUE O LINK /EXEC AQUI
+    <div class="menu-grid">
+      <button class="menu-btn btn-renda" onclick="abrirModal('renda')">
+        <div class="icon-circle">💰</div> <span>Registrar Renda</span>
+      </button>
+      <button class="menu-btn btn-gasto" onclick="abrirModal('gasto')">
+        <div class="icon-circle">💸</div> <span>Lançar Gasto</span>
+      </button>
+      <button class="menu-btn btn-reserva" onclick="abrirModal('reserva')">
+        <div class="icon-circle">🏦</div> <span>Nova Reserva</span>
+      </button>
+    </div>
 
-        async function novoLancamento(tipo) {
-            const { value: formValues } = await Swal.fire({
-                title: tipo === 'renda' ? 'Nova Renda' : 'Novo Gasto',
-                html:
-                    '<input id="swal-val" class="swal2-input" placeholder="Valor R$" type="number">' +
-                    '<input id="swal-desc" class="swal2-input" placeholder="Descrição">',
-                focusConfirm: false,
-                showCancelButton: true,
-                confirmButtonText: 'Salvar',
-                confirmButtonColor: tipo === 'renda' ? '#10b981' : '#ef4444',
-                preConfirm: () => {
-                    return [
-                        document.getElementById('swal-val').value,
-                        document.getElementById('swal-desc').value
-                    ]
-                }
-            });
+    <button onclick="abrirPlanilhaDinamicamente()" class="menu-btn btn-planilha">
+      <div class="icon-circle" style="background: #f1f5f9;">📊</div>
+      <span style="color: #1e293b">Ver Planilha Completa</span>
+    </button>
+  </div>
 
-            if (formValues && formValues[0]) {
-                enviarParaGoogle(tipo, formValues[0], formValues[1]);
-            }
-        }
+  <div id="modalOverlay" class="modal-overlay" onclick="if(event.target==this) fecharModal()" style="display:none;">
+    <div class="modal-content">
+      <div class="aviso-mes">📍 ABA: <span id="txtMes">Janeiro</span></div>
+      <h3 id="tituloForm"></h3>
 
-        async function enviarParaGoogle(tipo, valor, desc) {
-            document.getElementById('loading').style.display = 'flex';
-            const mes = document.getElementById('mesGlobal').value;
+      <form id="meuForm">
+        <input type="hidden" name="tipo" id="tipoLancamento">
+        <input type="hidden" name="mes" id="mesLancamento">
 
-            const dados = {
-                tipo: tipo,
-                mes: mes,
-                valor: valor,
-                categoria: tipo === 'renda' ? 'Extra' : 'Geral',
-                descricao: desc || 'Sem descrição'
-            };
+        <div id="gDesc"><label>Descrição</label><input type="text" name="descricao" id="inputDesc"></div>
+        <div id="gVal"><label>Valor (R$)</label><input type="number" step="0.01" name="valor" required placeholder="0,00"></div>
+        <div id="gCat"><label>Categoria</label><select name="categoria" id="selectCat" class="form-select"></select></div>
+        <div id="gPag"><label>Forma de Pagamento</label><select name="pagamento" class="form-select">
+          <option value="Pix">Pix</option><option value="Cartão">Cartão</option><option value="Dinheiro">Dinheiro</option>
+        </select></div>
+        <div id="gData"><label>Data</label><input type="date" name="data" id="inputData"></div>
 
-            try {
-                await fetch(WEB_APP_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    body: JSON.stringify(dados)
-                });
-                Swal.fire('Pronto!', 'Dados salvos com sucesso.', 'success');
-            } catch (e) {
-                Swal.fire('Erro', 'Falha ao conectar com a planilha', 'error');
-            } finally {
-                document.getElementById('loading').style.display = 'none';
-            }
-        }
+        <button type="submit" class="btn-submit" id="btnSalvar">Confirmar Lançamento</button>
+      </form>
+      <button class="btn-fechar" onclick="fecharModal()">Voltar ao Menu</button>
+    </div>
+  </div>
 
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js');
-        }
-    </script>
+  <script>
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyfvnnn89Qh8bfb8lDdML_AVauQo5s4gYhQqPNyibldfjtiPx0oebNaCpVbMcIgoCTQ/exec";
+
+    // Funções de Interface do Modal
+    function sincronizarMes() {
+      const mes = document.getElementById('mesGlobal').value;
+      document.getElementById('txtMes').innerText = mes;
+      document.getElementById('mesLancamento').value = mes;
+    }
+
+    function abrirModal(tipo) {
+      const modal = document.getElementById('modalOverlay');
+      const titulo = document.getElementById('tituloForm');
+      const cat = document.getElementById('selectCat');
+      
+      modal.style.display = 'flex';
+      document.getElementById('tipoLancamento').value = tipo;
+      sincronizarMes();
+
+      // Reset de campos
+      cat.innerHTML = "";
+      document.getElementById('gDesc').style.display = 'block';
+      document.getElementById('gPag').style.display = 'none';
+
+      if(tipo === 'renda') {
+        titulo.innerText = "Registrar Renda";
+        const opt = ["Salário", "Extra", "Dividendos"];
+        opt.forEach(o => cat.innerHTML += `<option value="${o}">${o}</option>`);
+        document.getElementById('gDesc').style.display = 'none';
+      } else if (tipo === 'gasto') {
+        titulo.innerText = "Lançar Gasto";
+        const opt = ["Alimentação", "Lazer", "Contas", "Saúde", "Outros"];
+        opt.forEach(o => cat.innerHTML += `<option value="${o}">${o}</option>`);
+        document.getElementById('gPag').style.display = 'block';
+      } else {
+        titulo.innerText = "Nova Reserva";
+        cat.innerHTML = '<option value="Reserva">Reserva de Emergência</option>';
+      }
+    }
+
+    function fecharModal() {
+      document.getElementById('modalOverlay').style.display = 'none';
+    }
+
+    // ENVIO DE DADOS PARA O GOOGLE SCRIPT
+    document.getElementById('meuForm').onsubmit = async (e) => {
+      e.preventDefault();
+      document.getElementById('loading').style.display = 'flex';
+      
+      const formData = new FormData(e.target);
+      const objetoDados = Object.fromEntries(formData.entries());
+
+      try {
+        await fetch(WEB_APP_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          body: JSON.stringify(objetoDados)
+        });
+        
+        fecharModal();
+        Swal.fire('Sucesso!', 'Lançamento registrado.', 'success');
+      } catch (err) {
+        Swal.fire('Erro!', 'Falha ao salvar.', 'error');
+      } finally {
+        document.getElementById('loading').style.display = 'none';
+      }
+    };
+
+    function abrirPlanilhaDinamicamente() {
+      window.open("COLE_AQUI_O_LINK_DA_SUA_PLANILHA_GOOGLE", "_blank");
+    }
+
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js');
+    }
+  </script>
 </body>
 </html>
