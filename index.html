@@ -1,136 +1,221 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>Nexus Finance</title>
-  <link rel="manifest" href="manifest.json">
-  <link rel="stylesheet" href="style.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Jarvis Business | ERP</title>
+    <meta name="theme-color" content="#1e293b">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
 </head>
+
 <body>
 
-  <div id="loading">
-    <div style="font-size: 40px;">🚀</div>
-    <p><b>Enviando para Planilha...</b></p>
-  </div>
-
-  <div class="container">
-    <div class="header">
-      <h2>Nexus Finance</h2>
-      <p>Gestão de Capital Premium</p>
-    </div>
-
-    <div class="mes-card">
-      <label>MÊS DE REFERÊNCIA</label>
-      <select id="mesGlobal" onchange="sincronizarMes()">
-        <option value="Janeiro">Janeiro</option><option value="Fevereiro">Fevereiro</option>
-        <option value="Março">Março</option><option value="Abril">Abril</option>
-        <option value="Maio">Maio</option><option value="Junho">Junho</option>
-        <option value="Julho">Julho</option><option value="Agosto">Agosto</option>
-        <option value="Setembro">Setembro</option><option value="Outubro">Outubro</option>
-        <option value="Novembro">Novembro</option><option value="Dezembro">Dezembro</option>
-      </select>
-    </div>
-
-    <div class="menu-grid">
-      <button class="menu-btn btn-renda" onclick="abrirModal('renda')">
-        <div class="icon-circle">💰</div> <span>Registrar Renda</span>
-      </button>
-      <button class="menu-btn btn-gasto" onclick="abrirModal('gasto')">
-        <div class="icon-circle">💸</div> <span>Lançar Gasto</span>
-      </button>
-      <button class="menu-btn btn-reserva" onclick="abrirModal('reserva')">
-        <div class="icon-circle">🏦</div> <span>Nova Reserva</span>
-      </button>
-    </div>
-
-    <button onclick="abrirPlanilha()" class="menu-btn btn-planilha">
-      <div class="icon-circle" style="background: #f1f5f9;">📊</div>
-      <span style="color: #1e293b">Ver Planilha Completa</span>
-    </button>
-  </div>
-
-  <div id="modalOverlay" class="modal-overlay" onclick="if(event.target==this) fecharModal()">
-    <div class="modal-content">
-      <div class="aviso-mes">📍 ABA: <span id="txtMes">Janeiro</span></div>
-      <h3 id="tituloForm"></h3>
-
-      <form id="meuForm">
-        <input type="hidden" name="tipo" id="tipoLancamento">
-        <input type="hidden" name="mes" id="mesLancamento">
-
-        <div id="gDesc"><label>Descrição</label><input type="text" name="descricao" id="inputDesc"></div>
-        <div id="gVal"><label>Valor (R$)</label><input type="number" step="0.01" name="valor" required placeholder="0,00"></div>
-        <div id="gCat"><label>Categoria</label><select name="categoria" id="selectCat"></select></div>
-        <div id="gPag" style="display:none;"><label>Forma de Pagamento</label>
-          <select name="pagamento">
-            <option value="Pix">Pix</option><option value="Cartão">Cartão</option><option value="Dinheiro">Dinheiro</option>
-          </select>
+    <nav class="navbar-minimal">
+        <div class="container-app d-flex justify-content-between align-items-center">
+            <div class="fw-bold" style="font-size: 0.9rem; letter-spacing: 0.5px;">
+                JARVIS<span class="text-primary"> PRO</span>
+            </div>
+            <div class="month-selector-wrapper">
+                <select id="mesGlobal"></select>
+            </div>
         </div>
-        <div id="gData"><label>Data</label><input type="date" name="data" id="inputData"></div>
+    </nav>
 
-        <button type="submit" class="btn-submit">Confirmar Lançamento</button>
-      </form>
-      <button class="btn-fechar" onclick="fecharModal()">Voltar ao Menu</button>
+    <div class="container-app">
+        <div class="dashboard-header">
+            <div class="welcome-msg">
+                <h2 id="tituloSaudacao">Olá, Gestor</h2>
+                <p>Danillo & Ketlyn</p>
+            </div>
+            <a href="#" id="linkPlanilha" target="_blank" class="btn-planilha">
+                <span id="txtPlanilha">Sincronizando...</span>
+            </a>
+        </div>
+
+        <div class="action-grid">
+            <button class="action-card" data-bs-toggle="modal" data-bs-target="#modalGasto">
+                <div class="btn-icon label-gasto">📉</div>
+                <h3>Lançar Despesa</h3>
+                <p>Registrar saída operacional ou encargos fixos.</p>
+                <span class="fw-bold text-primary" style="font-size: 0.65rem;">LANÇAR AGORA →</span>
+            </button>
+
+            <button class="action-card" data-bs-toggle="modal" data-bs-target="#modalRenda">
+                <div class="btn-icon label-renda">💰</div>
+                <h3>Lançar Receita</h3>
+                <p>Registrar entrada de capital ou proventos.</p>
+                <span class="fw-bold text-primary" style="font-size: 0.65rem;">LANÇAR AGORA →</span>
+            </button>
+
+            <button class="action-card" data-bs-toggle="modal" data-bs-target="#modalReserva">
+                <div class="btn-icon label-reserva">🏦</div>
+                <h3>Patrimônio</h3>
+                <p>Registrar aportes em reserva ou investimentos.</p>
+                <span class="fw-bold text-primary" style="font-size: 0.65rem;">LANÇAR AGORA →</span>
+            </button>
+        </div>
     </div>
-  </div>
 
-  <script>
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyfvnnn89Qh8bfb8lDdML_AVauQo5s4gYhQqPNyibldfjtiPx0oebNaCpVbMcIgoCTQ/exec";
+    <div class="modal fade" id="modalGasto" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h6 class="fw-bold m-0 text-uppercase">Nova Despesa</h6><button type="button" class="btn-close"
+                        data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <label class="form-label">Descrição</label>
+                    <input type="text" id="descGasto" class="form-control" placeholder="Ex: Internet">
 
-    function sincronizarMes() {
-      const mes = document.getElementById('mesGlobal').value;
-      document.getElementById('txtMes').innerText = mes;
-      document.getElementById('mesLancamento').value = mes;
-    }
+                    <div class="row">
+                        <div class="col-6"><label class="form-label">Valor</label><input type="number" id="valGasto"
+                                class="form-control" placeholder="0,00"></div>
+                        <div class="col-6"><label class="form-label">Data</label><input type="date" id="dataGasto"
+                                class="form-control"></div>
+                    </div>
 
-    function abrirModal(tipo) {
-      document.getElementById('modalOverlay').style.display = 'flex';
-      document.getElementById('tipoLancamento').value = tipo;
-      sincronizarMes();
-      const cat = document.getElementById('selectCat');
-      cat.innerHTML = "";
+                    <label class="form-label">Categoria</label>
+                    <select id="catGasto" class="form-select">
+                        <option value="Alimentação 🍝">Alimentação</option>
+                        <option value="Transporte 🚗">Logística/Transporte</option>
+                        <option value="Lazer 🤸‍♂️">Lazer/Networking</option>
+                        <option value="Fatura 💳">Contas Fixas</option>
+                        <option value="Outro">Outros Encargos</option>
+                    </select>
 
-      if(tipo === 'renda'){
-        document.getElementById('tituloForm').innerText = "Registrar Renda";
-        ["Salário", "Extra", "Dividendos"].forEach(o => cat.innerHTML += `<option value="${o}">${o}</option>`);
-        document.getElementById('gDesc').style.display = 'none';
-        document.getElementById('gPag').style.display = 'none';
-      } else if(tipo === 'gasto'){
-        document.getElementById('tituloForm').innerText = "Lançar Gasto";
-        ["Alimentação", "Lazer", "Contas", "Saúde", "Outros"].forEach(o => cat.innerHTML += `<option value="${o}">${o}</option>`);
-        document.getElementById('gDesc').style.display = 'block';
-        document.getElementById('gPag').style.display = 'block';
-      } else {
-        document.getElementById('tituloForm').innerText = "Nova Reserva";
-        cat.innerHTML = '<option value="Reserva">Reserva de Emergência</option>';
-      }
-    }
+                    <label class="form-label">Pagamento</label>
+                    <select id="pagGasto" class="form-select">
+                        <option value="Pix">Pix</option>
+                        <option value="Crédito">Crédito</option>
+                        <option value="Débito">Débito</option>
+                        <option value="Boleto">Boleto</option>
+                    </select>
 
-    function fecharModal() { document.getElementById('modalOverlay').style.display = 'none'; }
+                    <button onclick="enviar('gasto')" id="btnSalvarGasto" class="btn-submit-pro">PROCESSAR
+                        LANÇAMENTO</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    document.getElementById('meuForm').onsubmit = async (e) => {
-      e.preventDefault();
-      document.getElementById('loading').style.display = 'flex';
-      const formData = new FormData(e.target);
-      const dados = Object.fromEntries(formData.entries());
+    <div class="modal fade" id="modalRenda" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h6 class="fw-bold m-0 text-uppercase">Nova Receita</h6><button type="button" class="btn-close"
+                        data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <label class="form-label">Origem</label>
+                    <select id="catRenda" class="form-select">
+                        <option value="Salário">Salário</option>
+                        <option value="Extra">Extra</option>
+                    </select>
+                    <label class="form-label">Valor</label>
+                    <input type="number" id="valRenda" class="form-control" placeholder="0,00">
+                    <button onclick="enviar('renda')" id="btnSalvarRenda" class="btn-submit-pro"
+                        style="background: #059669;">EFETIVAR RECEITA</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-      try {
-        await fetch(WEB_APP_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(dados) });
-        fecharModal();
-        Swal.fire('Sucesso!', 'Lançamento registrado.', 'success');
-      } catch (err) {
-        Swal.fire('Erro!', 'Falha ao salvar.', 'error');
-      } finally {
-        document.getElementById('loading').style.display = 'none';
-      }
-    };
+    <div class="modal fade" id="modalReserva" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h6 class="fw-bold m-0 text-uppercase">Novo Aporte</h6><button type="button" class="btn-close"
+                        data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <label class="form-label">Destino</label>
+                    <input type="text" id="descReserva" class="form-control" placeholder="Ex: Investimento">
+                    <label class="form-label">Valor</label>
+                    <input type="number" id="valReserva" class="form-control" placeholder="0,00">
+                    <button onclick="enviar('reserva')" id="btnSalvarReserva" class="btn-submit-pro"
+                        style="background: #4f46e5;">PROTOCOLAR RESERVA</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    function abrirPlanilha() { window.open("LINK_DA_SUA_PLANILHA", "_blank"); }
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js').catch(err => console.log(err));
+            });
+        }
 
-    if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }
-  </script>
+        const URL_SCRIPT = 'SUA_URL_DO_APP_SCRIPT_AQUI';
+
+        async function inicializarApp() {
+            let nome = localStorage.getItem('nomeUsuarioJarvis');
+            if (!nome) {
+                nome = prompt("Seu nome:");
+                if (nome) localStorage.setItem('nomeUsuarioJarvis', nome);
+            }
+            document.getElementById('tituloSaudacao').innerText = `Olá, ${nome || 'Gestor'}`;
+
+            try {
+                const response = await fetch(URL_SCRIPT);
+                const link = await response.text();
+                if (link.includes("http")) {
+                    const btn = document.getElementById('linkPlanilha');
+                    btn.href = link; btn.classList.add('ativo');
+                    document.getElementById('txtPlanilha').innerText = '📊 Planilha';
+                }
+            } catch (e) { document.getElementById('txtPlanilha').innerText = 'Offline'; }
+        }
+
+        const meses = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+        const selectMes = document.getElementById('mesGlobal');
+        meses.forEach((m, i) => {
+            let opt = document.createElement('option');
+            opt.value = m; opt.innerHTML = m;
+            if (i === new Date().getMonth()) opt.selected = true;
+            selectMes.appendChild(opt);
+        });
+
+        document.getElementById('dataGasto').valueAsDate = new Date();
+        inicializarApp();
+
+        async function enviar(tipo) {
+            const mes = document.getElementById('mesGlobal').value;
+            const btnId = tipo === 'gasto' ? 'btnSalvarGasto' : (tipo === 'renda' ? 'btnSalvarRenda' : 'btnSalvarReserva');
+            const btn = document.getElementById(btnId);
+            let dados = { tipo, mes };
+
+            if (tipo === 'gasto') {
+                dados.descricao = document.getElementById('descGasto').value;
+                dados.valor = document.getElementById('valGasto').value;
+                dados.data = document.getElementById('dataGasto').value;
+                dados.pagamento = document.getElementById('pagGasto').value;
+                dados.categoria = document.getElementById('catGasto').value; // Categoria enviada
+            } else if (tipo === 'renda') {
+                dados.categoria = document.getElementById('catRenda').value;
+                dados.valor = document.getElementById('valRenda').value;
+            } else if (tipo === 'reserva') {
+                dados.descricao = document.getElementById('descReserva').value;
+                dados.valor = document.getElementById('valReserva').value;
+            }
+
+            if (!dados.valor) return alert("Valor vazio!");
+            btn.disabled = true; btn.innerText = "ENVIANDO...";
+
+            try {
+                await fetch(URL_SCRIPT, { method: 'POST', mode: 'no-cors', body: JSON.stringify(dados) });
+                alert("Sucesso!"); location.reload();
+            } catch (e) { alert("Erro!"); btn.disabled = false; btn.innerText = "TENTAR"; }
+        }
+    </script>
 </body>
+
 </html>
