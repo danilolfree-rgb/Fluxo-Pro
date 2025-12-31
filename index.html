@@ -5,51 +5,49 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Aura | Controle Financeiro</title>
-    <link rel="apple-touch-icon" sizes="57x57" href="assets/favicons/apple-icon-57x57.png">
-    <link rel="apple-touch-icon" sizes="60x60" href="assets/favicons/apple-icon-60x60.png">
-    <link rel="apple-touch-icon" sizes="72x72" href="assets/favicons/apple-icon-72x72.png">
-    <link rel="apple-touch-icon" sizes="76x76" href="assets/favicons/apple-icon-76x76.png">
-    <link rel="apple-touch-icon" sizes="114x114" href="assets/favicons/apple-icon-114x114.png">
-    <link rel="apple-touch-icon" sizes="120x120" href="assets/favicons/apple-icon-120x120.png">
-    <link rel="apple-touch-icon" sizes="144x144" href="assets/favicons/apple-icon-144x144.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="assets/favicons/apple-icon-152x152.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="assets/favicons/apple-icon-180x180.png">
-    <link rel="icon" type="image/png" sizes="192x192" href="assets/favicons/android-icon-192x192.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="assets/favicons/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="96x96" href="assets/favicons/favicon-96x96.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="assets/favicons/favicon-16x16.png">
-    <meta name="msapplication-TileColor" content="#ffffff">
-    <meta name="msapplication-TileImage" content="assets/favicons/ms-icon-144x144.png">
-    <meta name="theme-color" content="#ffffff">
-    <meta name="theme-color" content="#0f172a">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="manifest" href="manifest.json">
-
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-
+    <style>
+        /* Apenas o estilo da tela de ativação para não quebrar seu design */
+        #telaConfiguracao {
+            display: none; position: fixed; inset: 0; z-index: 9999;
+            background: #0f172a; align-items: center; justify-content: center; padding: 20px;
+        }
+        .card-ativacao {
+            background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255,255,255,0.1);
+            padding: 30px; border-radius: 24px; backdrop-filter: blur(20px); text-align: center; width: 100%; max-width: 400px;
+        }
+    </style>
 </head>
 
 <body>
 
+    <div id="telaConfiguracao">
+        <div class="card-ativacao">
+            <h3 style="color: #fff; font-weight: 800;">Ativar Aura</h3>
+            <p style="color: #94a3b8; font-size: 14px;">Cole a URL do Apps Script da sua planilha para conectar o app.</p>
+            <input type="text" id="inputUrlScript" class="form-control mb-3" placeholder="https://script.google.com/...">
+            <button onclick="configurarManualmente()" class="btn-submit" style="width: 100%;">Conectar Agora</button>
+        </div>
+    </div>
+
     <nav class="navbar-aura">
         <div class="nav-container">
             <div class="logo-aura">
-                <div class="logo-icon"></div>
+                <div class="logo-icon">A</div>
                 AURA
             </div>
             <select id="mesGlobal"></select>
         </div>
     </nav>
 
-    <div class="container-app">
+    <div class="container-app" id="appPrincipal">
         <div class="header-section d-flex justify-content-between align-items-end">
             <div>
                 <h2 id="tituloSaudacao">Bem-vindo à Aura</h2>
-                <p id="subtitulo">Danillo & Ketlyn • Gestão Patrimonial</p>
+                <p id="subtitulo">Bem vindo a Aura, Sua plataforma de controle financeiro.</p>
             </div>
             <a href="#" id="linkPlanilha" target="_blank" class="btn-planilha">Acessar Dados 📊</a>
         </div>
@@ -57,42 +55,40 @@
         <div class="action-grid">
             <div class="action-card" data-bs-toggle="modal" data-bs-target="#modalGasto">
                 <div class="card-icon" style="color: #fb7185;">📉</div>
-                <h3>Lançar Despesa</h3>
-                <p>Registre saídas imediatas ou contas fixas do mês.</p>
+                <h3>Registrar gasto</h3>
+                <p>Registre gastos do dia a dia ou contas fixas do mês.</p>
                 <div class="btn-action-text">Novo Registro +</div>
             </div>
 
             <div class="action-card" data-bs-toggle="modal" data-bs-target="#modalRenda">
                 <div class="card-icon" style="color: #4ade80;">💰</div>
-                <h3>Lançar Receita</h3>
-                <p>Registre aportes, salários ou rendas extras.</p>
+                <h3>Registrar Renda</h3>
+                <p>Registre o que entra, salário ou rendas extras.</p>
                 <div class="btn-action-text">Novo Registro +</div>
             </div>
 
             <div class="action-card" data-bs-toggle="modal" data-bs-target="#modalReserva">
                 <div class="card-icon" style="color: #818cf8;">🏦</div>
-                <h3>Patrimônio</h3>
-                <p>Gerencie investimentos e reservas de longo prazo.</p>
+                <h3>Registrar Reservas</h3>
+                <p>Gerencie investimentos e reservas. Pretende juntar dinheiro? registre.</p>
                 <div class="btn-action-text">Novo Registro +</div>
             </div>
         </div>
+        <center><small onclick="resetarApp()" style="color: #334155; cursor: pointer; margin-top: 20px; display: block;">Configurações de Conexão ⚙️</small></center>
     </div>
 
     <div class="modal fade" id="modalGasto" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h6 class="m-0 fw-bold">NOVA DESPESA AURA</h6><button type="button"
-                        class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    <h6 class="m-0 fw-bold">NOVA DESPESA AURA</h6><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <label class="form-label">O que foi pago?</label>
                     <input type="text" id="descGasto" class="form-control" placeholder="Ex: Mercado">
                     <div class="row">
-                        <div class="col-6"><label class="form-label">Valor</label><input type="number" id="valGasto"
-                                class="form-control" placeholder="R$ 0,00"></div>
-                        <div class="col-6"><label class="form-label">Data</label><input type="date" id="dataGasto"
-                                class="form-control"></div>
+                        <div class="col-6"><label class="form-label">Valor</label><input type="number" id="valGasto" class="form-control" placeholder="R$ 0,00"></div>
+                        <div class="col-6"><label class="form-label">Data</label><input type="date" id="dataGasto" class="form-control"></div>
                     </div>
                     <div class="row">
                         <div class="col-6"><label class="form-label">Categoria</label>
@@ -109,63 +105,32 @@
                             </select>
                         </div>
                     </div>
-                    <button onclick="enviar('gasto')" id="btnSalvarGasto" class="btn-submit">Finalizar
-                        Lançamento</button>
+                    <button onclick="enviar('gasto')" id="btnSalvarGasto" class="btn-submit">Finalizar Lançamento</button>
                 </div>
             </div>
         </div>
     </div>
-
-    <div class="modal fade" id="modalRenda" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h6 class="m-0 fw-bold">ADICIONAR RECEITA</h6><button type="button"
-                        class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <label class="form-label">Origem do Capital</label>
-                    <select id="catRenda" class="form-select">
-                        <option value="Salário">Salário</option>
-                        <option value="Extra">Renda Extra</option>
-                    </select>
-                    <label class="form-label">Valor Recebido</label>
-                    <input type="number" id="valRenda" class="form-control" placeholder="R$ 0,00">
-                    <button onclick="enviar('renda')" id="btnSalvarRenda" class="btn-submit"
-                        style="background: #4ade80; color: #064e3b;">Confirmar Recebimento</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="modalReserva" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h6 class="m-0 fw-bold">APORTE PATRIMONIAL</h6><button type="button"
-                        class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <label class="form-label">Destinação do Aporte</label>
-                    <input type="text" id="descReserva" class="form-control" placeholder="Ex: CDB ou Ações">
-                    <label class="form-label">Valor do Aporte</label>
-                    <input type="number" id="valReserva" class="form-control" placeholder="R$ 0,00">
-                    <button onclick="enviar('reserva')" id="btnSalvarReserva" class="btn-submit"
-                        style="background: #818cf8;">Efetivar Investimento</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        const URL_SCRIPT = 'SUA_URL_DO_APP_SCRIPT_AQUI';
+        // --- LÓGICA DE VENDA E ATIVAÇÃO ---
+        const params = new URLSearchParams(window.location.search);
+        const urlPelaUrl = params.get('key');
+        const nomePelaUrl = params.get('user');
 
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js'); });
+        if (urlPelaUrl) {
+            localStorage.setItem('aura_script_url', urlPelaUrl);
+            if (nomePelaUrl) localStorage.setItem('nomeAuraUser', nomePelaUrl);
+            window.history.replaceState({}, document.title, window.location.pathname);
         }
 
+        let URL_SCRIPT = localStorage.getItem('aura_script_url');
+
         async function inicializarApp() {
+            if (!URL_SCRIPT) {
+                document.getElementById('telaConfiguracao').style.display = 'flex';
+                return;
+            }
+
             let nome = localStorage.getItem('nomeAuraUser');
             if (!nome) {
                 nome = prompt("Olá! Como posso te chamar?");
@@ -180,6 +145,22 @@
             } catch (e) { console.log("Aura Offline"); }
         }
 
+        function configurarManualmente() {
+            const url = document.getElementById('inputUrlScript').value;
+            if(url.includes('exec')) {
+                localStorage.setItem('aura_script_url', url);
+                location.reload();
+            } else { alert("URL Inválida!"); }
+        }
+
+        function resetarApp() {
+            if(confirm("Deseja desconectar a planilha atual?")) {
+                localStorage.clear();
+                location.reload();
+            }
+        }
+
+        // --- SEU SCRIPT ORIGINAL CONTINUA AQUI ---
         const meses = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
         const selectMes = document.getElementById('mesGlobal');
         meses.forEach((m, i) => {
@@ -198,6 +179,7 @@
             const btn = document.getElementById(btnId);
             let dados = { tipo, mes };
 
+            // ... (Suas condições de gasto, renda e reserva mantidas iguais) ...
             if (tipo === 'gasto') {
                 dados.descricao = document.getElementById('descGasto').value;
                 dados.valor = document.getElementById('valGasto').value;
@@ -226,5 +208,4 @@
         }
     </script>
 </body>
-
 </html>
