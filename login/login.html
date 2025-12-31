@@ -178,24 +178,6 @@
 
         let modoLogin = true;
 
-        // Função para alternar entre tela de Login e Cadastro
-        function toggleAuth() {
-            modoLogin = !modoLogin;
-            const titulo = document.getElementById('authTitle');
-            const btn = document.getElementById('btnAuth');
-            const link = document.getElementById('toggleText');
-
-            if (modoLogin) {
-                titulo.innerText = 'Bem-vindo de volta';
-                btn.innerText = 'Entrar';
-                link.innerText = 'Cadastre-se';
-            } else {
-                titulo.innerText = 'Criar nova conta';
-                btn.innerText = 'Criar Conta';
-                link.innerText = 'Fazer Login';
-            }
-        }
-
         function toggleAuth() {
             modoLogin = !modoLogin;
             const titulo = document.getElementById('authTitle');
@@ -219,7 +201,7 @@
         async function handleAuth() {
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
-            const nome = document.getElementById('nome').value;
+            const nome = document.getElementById('nome').value.trim();
             const btn = document.getElementById('btnAuth');
 
             btn.disabled = true;

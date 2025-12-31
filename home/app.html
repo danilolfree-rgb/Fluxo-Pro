@@ -187,12 +187,16 @@
             if (!session) {
                 window.location.href = '../login/login.html';
             } else {
-                // Pega o nome que salvamos nos metadados
-                const nomeUsuario = session.user.user_metadata.display_name || "Usuário";
+                // 1. Captura o nome dos metadados que salvamos no cadastro
+                // Usamos o || '!' para que, se não houver nome, continue apenas "Olá!"
+                const nomeUsuario = session.user.user_metadata.display_name;
+                const saudacaoElemento = document.getElementById('tituloSaudacao');
 
-                // Se você tiver um elemento com id="boasVindas", ele atualiza o texto:
-                if (document.getElementById('boasVindas')) {
-                    document.getElementById('boasVindas').innerText = `Olá, ${nomeUsuario}!`;
+                // 2. Atualiza o HTML com o nome
+                if (nomeUsuario) {
+                    saudacaoElemento.innerText = `Olá, ${nomeUsuario}!`;
+                } else {
+                    saudacaoElemento.innerText = `Olá!`;
                 }
             }
         }
