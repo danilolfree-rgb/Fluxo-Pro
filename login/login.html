@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aura | Login</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/modais.css">
+    <style>
+        :root {
+            --accent: #818cf8;
+            --accent-glow: rgba(129, 140, 248, 0.4);
+        }
+
+        body {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(circle at center, #0f172a 0%, #020617 100%);
+            overflow: hidden;
+        }
+
+        /* Efeito de Vidro no Card */
+        .login-card {
+            width: 100%;
+            max-width: 420px;
+            padding: 50px 40px;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 32px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            text-align: center;
+        }
+
+        /* Logo AURA Estilizada */
+        .logo-login {
+            font-size: 3rem;
+            font-weight: 900;
+            margin-bottom: 5px;
+            letter-spacing: 8px;
+            background: linear-gradient(135deg, #fff 0%, var(--accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            position: relative;
+            display: inline-block;
+        }
+
+        /* Brilho atrás da Logo */
+        .logo-login::after {
+            content: 'AURA';
+            position: absolute;
+            left: 0;
+            top: 0;
+            z-index: -1;
+            filter: blur(20px);
+            opacity: 0.5;
+            background: linear-gradient(135deg, #fff 0%, var(--accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        #authTitle {
+            color: #94a3b8;
+            font-size: 0.95rem;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        /* Melhorias no Formulário */
+        .form-label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #64748b;
+            margin-bottom: 8px;
+            margin-left: 5px;
+        }
+
+        .form-control {
+            background: rgba(2, 6, 23, 0.4) !important;
+            border: 1px solid rgba(255, 255, 255, 0.05) !important;
+            border-radius: 16px !important;
+            padding: 14px 20px !important;
+            color: white !important;
+            transition: all 0.3s ease !important;
+        }
+
+        .form-control:focus {
+            border-color: var(--accent) !important;
+            box-shadow: 0 0 0 4px var(--accent-glow) !important;
+            background: rgba(2, 6, 23, 0.6) !important;
+            transform: translateY(-1px);
+        }
+
+        /* Botão de Login */
+        .btn-login {
+            background: linear-gradient(135deg, #818cf8 0%, #6366f1 100%);
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 16px;
+            font-weight: 700;
+            font-size: 1rem;
+            width: 100%;
+            margin-top: 25px;
+            box-shadow: 0 10px 20px -5px rgba(99, 102, 241, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px -5px rgba(99, 102, 241, 0.6);
+            filter: brightness(1.1);
+        }
+
+        .btn-login:active {
+            transform: translateY(0);
+        }
+
+        .switch-auth {
+            margin-top: 25px;
+            font-size: 0.9rem;
+            color: #64748b;
+        }
+
+        .switch-auth b {
+            color: var(--accent);
+            text-decoration: none;
+            transition: 0.3s;
+            padding: 5px;
+        }
+
+        .switch-auth b:hover {
+            color: white;
+            text-shadow: 0 0 10px var(--accent);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="login-card">
+        <div class="logo-login">AURA</div>
+        <h5 id="authTitle" class="mb-4">Bem-vindo de volta</h5>
+
+        <div class="text-start">
+            <label class="form-label">E-mail</label>
+            <input type="email" id="email" class="form-control mb-3" placeholder="seu@email.com">
+
+            <label class="form-label">Senha</label>
+            <input type="password" id="password" class="form-control mb-3" placeholder="••••••••">
+        </div>
+
+        <button class="btn-login" id="btnAuth" onclick="handleAuth()">Entrar</button>
+
+        <p class="switch-auth" onclick="toggleAuth()">
+            Não tem uma conta? <b id="toggleText">Cadastre-se</b>
+        </p>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const SUPABASE_URL = 'https://zxftraxyutwmjoreonsa.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp4ZnRyYXh5dXR3bWpvcmVvbnNhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcxNDgzMzMsImV4cCI6MjA4MjcyNDMzM30.noOBeBltO9Bsze5Q9SWTOhHAf7tfT4hB4ozwxvXc0Fo';
+        const s_client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        let modoLogin = true;
+
+        // Função para alternar entre tela de Login e Cadastro
+        function toggleAuth() {
+            modoLogin = !modoLogin;
+            const titulo = document.getElementById('authTitle');
+            const btn = document.getElementById('btnAuth');
+            const link = document.getElementById('toggleText');
+
+            if (modoLogin) {
+                titulo.innerText = 'Bem-vindo de volta';
+                btn.innerText = 'Entrar';
+                link.innerText = 'Cadastre-se';
+            } else {
+                titulo.innerText = 'Criar nova conta';
+                btn.innerText = 'Criar Conta';
+                link.innerText = 'Fazer Login';
+            }
+        }
+
+        // Função Principal de Autenticação
+        async function handleAuth() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const btn = document.getElementById('btnAuth');
+
+            if (!email || !password) {
+                alert("Preencha todos os campos!");
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Carregando...';
+
+            try {
+                if (modoLogin) {
+                    // Tenta Logar
+                    const { data, error } = await s_client.auth.signInWithPassword({ email, password });
+                    if (error) throw error;
+
+                    // Sucesso no Login
+                    window.location.href = '../home/app.html';
+                } else {
+                    // Tenta Cadastrar
+                    const { data, error } = await s_client.auth.signUp({ email, password });
+                    if (error) throw error;
+
+                    if (data.user && data.session) {
+                        // Se o Supabase logar direto (Confirm Email desativado)
+                        window.location.href = '../home/app.html';
+                    } else {
+                        // Se ainda pedir confirmação
+                        alert("Cadastro realizado! Verifique seu e-mail ou confirme manualmente no painel do Supabase.");
+                    }
+                }
+            } catch (err) {
+                alert("Erro na autenticação: " + err.message);
+            } finally {
+                btn.disabled = false;
+                btn.innerText = modoLogin ? 'Entrar' : 'Criar Conta';
+            }
+        }
+    </script>
+</body>
+
+</html>
