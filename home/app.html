@@ -156,24 +156,42 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content bg-dark border-secondary">
                 <div class="modal-header border-0">
-                    <h6 class="fw-bold">NOVO GASTO</h6><button type="button" class="btn-close btn-close-white"
-                        data-bs-dismiss="modal"></button>
+                    <h6 class="fw-bold">NOVO GASTO</h6>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body pt-0">
-                    <input type="text" id="descGasto" class="form-control mb-3" placeholder="Descrição">
-                    <input type="number" id="valGasto" class="form-control mb-3" placeholder="Valor R$">
+                    <label class="form-label text-muted small">Descrição</label>
+                    <input type="text" id="descGasto" class="form-control mb-3" placeholder="Ex: Mercado">
+
+                    <label class="form-label text-muted small">Valor</label>
+                    <input type="number" id="valGasto" class="form-control mb-3" placeholder="R$ 0,00">
+
                     <div class="row g-2 mb-3">
-                        <div class="col-6"><input type="date" id="dataGasto" class="form-control"></div>
                         <div class="col-6">
+                            <label class="form-label text-muted small">Data</label>
+                            <input type="date" id="dataGasto" class="form-control">
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label text-muted small">Categoria</label>
                             <select id="catGasto" class="form-select">
                                 <option value="Alimentação">Alimentação</option>
                                 <option value="Casa">Moradia</option>
                                 <option value="Lazer">Lazer</option>
+                                <option value="Transporte">Transporte</option>
                             </select>
                         </div>
                     </div>
+
+                    <label class="form-label text-muted small">Forma de Pagamento</label>
+                    <select id="pagGasto" class="form-select mb-4">
+                        <option value="Pix">Pix</option>
+                        <option value="Crédito">Cartão de Crédito</option>
+                        <option value="Débito">Cartão de Débito</option>
+                        <option value="Dinheiro">Dinheiro</option>
+                    </select>
+
                     <button onclick="enviar('gasto')" id="btnSalvarGasto"
-                        class="btn btn-primary w-100 p-3 rounded-4 fw-bold">SALVAR</button>
+                        class="btn btn-primary w-100 p-3 rounded-4 fw-bold">SALVAR LANÇAMENTO</button>
                 </div>
             </div>
         </div>
@@ -275,6 +293,7 @@
                     dados.valor = parseFloat(document.getElementById('valGasto').value);
                     dados.data = document.getElementById('dataGasto').value;
                     dados.categoria = document.getElementById('catGasto').value;
+                    dados.pagamento = document.getElementById('pagGasto').value;
                 } else if (tipo === 'renda') {
                     dados.valor = parseFloat(document.getElementById('valRenda').value);
                     dados.categoria = document.getElementById('catRenda').value;
