@@ -1,44 +1,44 @@
-/* Navbar Aura - Ajuste de Alinhamento */
+/* Navbar Aura - Layout Corrigido */
 .navbar-aura {
     background: rgba(15, 23, 42, 0.7);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    padding: 10px 0; /* Diminuí um pouco o padding vertical */
+    padding: 12px 0;
     position: sticky;
     top: 0;
     z-index: 1000;
-    width: 100%; /* Garante que a barra ocupe toda a largura */
+    width: 100%;
 }
 
+/* O segredo está aqui: forçamos o alinhamento horizontal */
 .nav-container {
     display: flex !important;
-    flex-direction: row !important; /* Força a direção em linha */
-    justify-content: space-between !important; /* Empurra um para cada lado */
+    flex-direction: row !important; 
+    flex-wrap: nowrap !important; /* IMPEDE de cair para a linha de baixo */
+    justify-content: space-between !important; 
     align-items: center !important;
-    max-width: 100%; /* Importante para não quebrar em telas pequenas */
+    max-width: 1200px; 
     margin: 0 auto;
-    padding: 0 15px;
+    padding: 0 20px;
+    width: 100%;
 }
 
-/* Garante que o grupo da Logo não cresça além do necessário */
 .logo-aura {
     display: flex;
     align-items: center;
-    gap: 8px;
-    flex-shrink: 0; /* Impede a logo de "esmagar" */
+    gap: 10px;
+    white-space: nowrap; /* Impede que o texto AURA quebre */
 }
 
-/* Ajuste no Seletor para ele não ocupar a tela toda */
 #mesGlobal {
-    min-width: 120px; /* Tamanho mínimo para o texto do mês */
-    max-width: 150px; /* Impede que o botão fique gigante */
+    /* Remova qualquer margin-top que possa existir */
+    margin: 0 !important; 
     background: rgba(30, 41, 59, 0.5);
     color: #f8fafc;
     border: 1px solid rgba(255, 255, 255, 0.1);
-    padding: 6px 12px;
-    border-radius: 10px;
-    font-size: 0.8rem;
+    padding: 8px 16px;
+    border-radius: 12px;
+    font-weight: 600;
     cursor: pointer;
-    /* Mantenha o restante do seu CSS do seletor aqui (background-image, etc) */
 }
