@@ -19,8 +19,13 @@
 <body>
     <!-- Barra superior -->
     <nav class="navbar-aura">
-        <div class="logo-aura" style="font-weight: 800; letter-spacing: 1px;">AURA</div>
-        <select id="mesGlobal"></select>
+        <div class="nav-container">
+            <div class="logo-aura">
+                <div class="logo-icon">A</div>
+                <span>AURA</span>
+            </div>
+            <select id="mesGlobal"></select>
+        </div>
     </nav>
 
     <!-- Container de informações requisitadas do database -->
@@ -58,7 +63,7 @@
             <button class="btn-mini" data-bs-toggle="modal" data-bs-target="#modalReserva"><i>🏦</i> Reserva</button>
         </div>
     </div>
-    
+
     <!-- Modal que envia informações sobre gastos do usuário -->
     <div class="modal fade" id="modalGasto" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
