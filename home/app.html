@@ -185,12 +185,15 @@
             const { data: { session } } = await s_client.auth.getSession();
 
             if (!session) {
-                // Se não houver sessão, chuta o usuário para o login
                 window.location.href = '../login/login.html';
             } else {
-                console.log("Usuário logado:", session.user.email);
-                // Aqui você pode chamar a função que carrega os dados do banco
-                // buscarDados(); 
+                // Pega o nome que salvamos nos metadados
+                const nomeUsuario = session.user.user_metadata.display_name || "Usuário";
+
+                // Se você tiver um elemento com id="boasVindas", ele atualiza o texto:
+                if (document.getElementById('boasVindas')) {
+                    document.getElementById('boasVindas').innerText = `Olá, ${nomeUsuario}!`;
+                }
             }
         }
 

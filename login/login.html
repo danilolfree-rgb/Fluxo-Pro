@@ -151,6 +151,11 @@
         <h5 id="authTitle" class="mb-4">Bem-vindo de volta</h5>
 
         <div class="text-start">
+            <div id="nomeContainer" style="display: none;">
+                <label class="form-label">Como quer ser chamado?</label>
+                <input type="text" id="nome" class="form-control mb-3" placeholder="Ex: Lucas">
+            </div>
+
             <label class="form-label">E-mail</label>
             <input type="email" id="email" class="form-control mb-3" placeholder="seu@email.com">
 
@@ -191,43 +196,54 @@
             }
         }
 
-        // Função Principal de Autenticação
+        function toggleAuth() {
+            modoLogin = !modoLogin;
+            const titulo = document.getElementById('authTitle');
+            const btn = document.getElementById('btnAuth');
+            const link = document.getElementById('toggleText');
+            const nomeContainer = document.getElementById('nomeContainer');
+
+            if (modoLogin) {
+                titulo.innerText = 'Bem-vindo de volta';
+                btn.innerText = 'Entrar';
+                link.innerText = 'Cadastre-se';
+                nomeContainer.style.display = 'none'; // Esconde no login
+            } else {
+                titulo.innerText = 'Criar nova conta';
+                btn.innerText = 'Criar Conta';
+                link.innerText = 'Fazer Login';
+                nomeContainer.style.display = 'block'; // Mostra no cadastro
+            }
+        }
+
         async function handleAuth() {
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
+            const nome = document.getElementById('nome').value;
             const btn = document.getElementById('btnAuth');
 
-            if (!email || !password) {
-                alert("Preencha todos os campos!");
-                return;
-            }
-
             btn.disabled = true;
-            btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Carregando...';
+            btn.innerHTML = 'Carregando...';
 
             try {
                 if (modoLogin) {
-                    // Tenta Logar
-                    const { data, error } = await s_client.auth.signInWithPassword({ email, password });
+                    const { error } = await s_client.auth.signInWithPassword({ email, password });
                     if (error) throw error;
-
-                    // Sucesso no Login
                     window.location.href = '../home/app.html';
                 } else {
-                    // Tenta Cadastrar
-                    const { data, error } = await s_client.auth.signUp({ email, password });
+                    // CADASTRO COM METADADOS (NOME)
+                    const { data, error } = await s_client.auth.signUp({
+                        email,
+                        password,
+                        options: {
+                            data: { display_name: nome } // Salva o nome aqui
+                        }
+                    });
                     if (error) throw error;
-
-                    if (data.user && data.session) {
-                        // Se o Supabase logar direto (Confirm Email desativado)
-                        window.location.href = '../home/app.html';
-                    } else {
-                        // Se ainda pedir confirmação
-                        alert("Cadastro realizado! Verifique seu e-mail ou confirme manualmente no painel do Supabase.");
-                    }
+                    window.location.href = '../home/app.html';
                 }
             } catch (err) {
-                alert("Erro na autenticação: " + err.message);
+                alert(err.message);
             } finally {
                 btn.disabled = false;
                 btn.innerText = modoLogin ? 'Entrar' : 'Criar Conta';
