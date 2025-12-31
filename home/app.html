@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Aura | Controle Financeiro</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="/home/app_style.css">
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --card-bg: #1e293b;
+            --text-muted: #94a3b8;
+            --accent: #818cf8;
+            --success: #4ade80;
+            --danger: #fb7185;
+        }
+
+        body {
+            background: var(--bg-dark);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: white;
+        }
+
+        /* Dashboard Cards */
+        .card-resumo {
+            background: var(--card-bg);
+            padding: 24px;
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            margin-bottom: 16px;
+        }
+
+        .card-resumo.principal {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border: 1px solid rgba(129, 140, 248, 0.2);
+            text-align: center;
+        }
+
+        .card-resumo small {
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 10px;
+            letter-spacing: 1px;
+        }
+
+        .card-resumo h1 {
+            font-weight: 800;
+            margin: 8px 0 0;
+            font-size: 2.2rem;
+        }
+
+        .card-resumo h3 {
+            font-weight: 700;
+            margin: 4px 0 0;
+            font-size: 1.1rem;
+        }
+
+        /* Mini Buttons */
+        .action-grid-mini {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin: 20px 0;
+        }
+
+        .btn-mini {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 16px 8px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            transition: 0.3s;
+        }
+
+        .btn-mini:active {
+            transform: scale(0.95);
+            background: #334155;
+        }
+
+        .btn-mini i {
+            display: block;
+            font-size: 1.4rem;
+            margin-bottom: 4px;
+            font-style: normal;
+        }
+
+        /* Navbar e Ajustes */
+        .navbar-aura {
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #mesGlobal {
+            background: #1e293b;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar-aura">
+        <div class="logo-aura" style="font-weight: 800; letter-spacing: 1px;">AURA</div>
+        <select id="mesGlobal"></select>
+    </nav>
+
+    <div class="container px-4">
+        <div class="header-section mb-4">
+            <h4 id="tituloSaudacao" style="font-weight: 800;">Olá!</h4>
+            <p style="color: var(--text-muted); font-size: 14px;">Aqui está seu resumo financeiro.</p>
+        </div>
+
+        <div class="row g-3">
+            <div class="col-12">
+                <div class="card-resumo principal">
+                    <small>Balanço Mensal</small>
+                    <h1 id="saldoTotal">R$ 0,00</h1>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="card-resumo">
+                    <small>Quanto sobrou</small>
+                    <h3 id="resumoGanhos" style="color: var(--success);">R$ 0,00</h3>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="card-resumo">
+                    <small>Gastos</small>
+                    <h3 id="resumoGastos" style="color: var(--danger);">R$ 0,00</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="action-grid-mini">
+            <button class="btn-mini" data-bs-toggle="modal" data-bs-target="#modalGasto"><i>📉</i> Gasto</button>
+            <button class="btn-mini" data-bs-toggle="modal" data-bs-target="#modalRenda"><i>💰</i> Renda</button>
+            <button class="btn-mini" data-bs-toggle="modal" data-bs-target="#modalReserva"><i>🏦</i> Reserva</button>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalGasto" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-dark border-secondary">
+                <div class="modal-header border-0">
+                    <h6 class="fw-bold">NOVO GASTO</h6><button type="button" class="btn-close btn-close-white"
+                        data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body pt-0">
+                    <input type="text" id="descGasto" class="form-control mb-3" placeholder="Descrição">
+                    <input type="number" id="valGasto" class="form-control mb-3" placeholder="Valor R$">
+                    <div class="row g-2 mb-3">
+                        <div class="col-6"><input type="date" id="dataGasto" class="form-control"></div>
+                        <div class="col-6">
+                            <select id="catGasto" class="form-select">
+                                <option value="Alimentação">Alimentação</option>
+                                <option value="Casa">Moradia</option>
+                                <option value="Lazer">Lazer</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button onclick="enviar('gasto')" id="btnSalvarGasto"
+                        class="btn btn-primary w-100 p-3 rounded-4 fw-bold">SALVAR</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalRenda" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-dark border-secondary">
+                <div class="modal-header border-0">
+                    <h6 class="fw-bold text-success">REGISTRAR ENTRADA</h6><button type="button"
+                        class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body pt-0">
+                    <select id="catRenda" class="form-select mb-3">
+                        <option value="Salário">Salário</option>
+                        <option value="Extra">Renda Extra</option>
+                    </select>
+                    <input type="number" id="valRenda" class="form-control mb-3" placeholder="Valor R$">
+                    <button onclick="enviar('renda')" id="btnSalvarRenda"
+                        class="btn btn-success w-100 p-3 rounded-4 fw-bold">CONFIRMAR</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalReserva" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-dark border-secondary">
+                <div class="modal-header border-0">
+                    <h6 class="fw-bold text-info">NOVA RESERVA</h6><button type="button"
+                        class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body pt-0">
+                    <input type="text" id="descReserva" class="form-control mb-3" placeholder="Objetivo da reserva">
+                    <input type="number" id="valReserva" class="form-control mb-3" placeholder="Valor R$">
+                    <button onclick="enviar('reserva')" id="btnSalvarReserva"
+                        class="btn btn-info w-100 p-3 rounded-4 fw-bold">GUARDAR</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script>
+        const SUPABASE_URL = 'https://zxftraxyutwmjoreonsa.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp4ZnRyYXh5dXR3bWpvcmVvbnNhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcxNDgzMzMsImV4cCI6MjA4MjcyNDMzM30.noOBeBltO9Bsze5Q9SWTOhHAf7tfT4hB4ozwxvXc0Fo';
+        const s_client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        window.onload = async function () {
+            configurarMeses();
+            let nome = localStorage.getItem('nomeAuraUser') || prompt("Seu nome:");
+            if (nome) {
+                localStorage.setItem('nomeAuraUser', nome);
+                document.getElementById('tituloSaudacao').innerText = `Olá, ${nome}`;
+            }
+            if (document.getElementById('dataGasto')) document.getElementById('dataGasto').valueAsDate = new Date();
+            atualizarDashboard();
+        };
+
+        function configurarMeses() {
+            const meses = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+            const select = document.getElementById('mesGlobal');
+            meses.forEach((m, i) => {
+                let opt = document.createElement('option');
+                opt.value = m; opt.innerText = m;
+                if (i === new Date().getMonth()) opt.selected = true;
+                select.appendChild(opt);
+            });
+            select.onchange = atualizarDashboard;
+        }
+
+        async function atualizarDashboard() {
+            const mes = document.getElementById('mesGlobal').value;
+            const { data, error } = await s_client.from('Lançamentos').select('*').eq('mes', mes);
+
+            if (error) return console.error(error);
+
+            let gnh = 0, gst = 0;
+            data.forEach(i => {
+                if (i.tipo === 'renda') gnh += i.valor;
+                if (i.tipo === 'gasto') gst += i.valor;
+            });
+
+            document.getElementById('saldoTotal').innerText = (gnh - gst).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+            document.getElementById('resumoGanhos').innerText = gnh.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+            document.getElementById('resumoGastos').innerText = gst.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        }
+
+        async function enviar(tipo) {
+            const btnId = tipo === 'gasto' ? 'btnSalvarGasto' : (tipo === 'renda' ? 'btnSalvarRenda' : 'btnSalvarReserva');
+            const btn = document.getElementById(btnId);
+            const dados = { tipo, mes: document.getElementById('mesGlobal').value };
+
+            try {
+                if (tipo === 'gasto') {
+                    dados.descricao = document.getElementById('descGasto').value;
+                    dados.valor = parseFloat(document.getElementById('valGasto').value);
+                    dados.data = document.getElementById('dataGasto').value;
+                    dados.categoria = document.getElementById('catGasto').value;
+                } else if (tipo === 'renda') {
+                    dados.valor = parseFloat(document.getElementById('valRenda').value);
+                    dados.categoria = document.getElementById('catRenda').value;
+                    dados.descricao = "Entrada";
+                } else if (tipo === 'reserva') {
+                    dados.valor = parseFloat(document.getElementById('valReserva').value);
+                    dados.descricao = document.getElementById('descReserva').value;
+                    dados.categoria = "Investimento";
+                }
+
+                if (!dados.valor) return alert("Insira um valor");
+                btn.disabled = true; btn.innerText = "PROCESSANDO...";
+
+                const { error } = await s_client.from('Lançamentos').insert([dados]);
+                if (error) throw error;
+
+                location.reload();
+            } catch (err) {
+                alert("Erro: " + err.message);
+                btn.disabled = false;
+            }
+        }
+    </script>
+</body>
+
+</html>
