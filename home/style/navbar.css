@@ -1,0 +1,62 @@
+/* Navbar Aura */
+.navbar-aura {
+    background: rgba(15, 23, 42, 0.8);
+    backdrop-filter: blur(15px);
+    border-bottom: 1px solid var(--glass-border);
+    padding: 15px 0;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.nav-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* Logo Tipo Aura */
+.logo-aura {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 800;
+    font-size: 1rem;
+    letter-spacing: 1px;
+}
+
+.logo-icon {
+    width: 22px;
+    height: 22px;
+    background: var(--aura-effect);
+    border-bottom-left-radius: 100%;
+    border-bottom-right-radius: 50%;
+    border-top-left-radius: 100%;
+    border-top-right-radius: 100%;
+    text-align: center;
+    position: relative;
+    font-family: monospace;
+}
+
+.logo-icon::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 100%;
+    filter: blur(8px);
+    background: var(--aura-effect);
+    opacity: 0.6;
+}
+
+#mesGlobal {
+    background: #1e293b;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 14px;
+}

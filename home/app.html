@@ -9,55 +9,14 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="/home/app_style.css">
+    <link rel="stylesheet" href="/home/style/navbar.css">
+    <link rel="stylesheet" href="/home/style/cards.css">
     <style>
-        :root {
-            --bg-dark: #0f172a;
-            --card-bg: #1e293b;
-            --text-muted: #94a3b8;
-            --accent: #818cf8;
-            --success: #4ade80;
-            --danger: #fb7185;
-        }
 
         body {
             background: var(--bg-dark);
             font-family: 'Plus Jakarta Sans', sans-serif;
             color: white;
-        }
-
-        /* Dashboard Cards */
-        .card-resumo {
-            background: var(--card-bg);
-            padding: 24px;
-            border-radius: 24px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            margin-bottom: 16px;
-        }
-
-        .card-resumo.principal {
-            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-            border: 1px solid rgba(129, 140, 248, 0.2);
-            text-align: center;
-        }
-
-        .card-resumo small {
-            color: var(--text-muted);
-            font-weight: 600;
-            text-transform: uppercase;
-            font-size: 10px;
-            letter-spacing: 1px;
-        }
-
-        .card-resumo h1 {
-            font-weight: 800;
-            margin: 8px 0 0;
-            font-size: 2.2rem;
-        }
-
-        .card-resumo h3 {
-            font-weight: 700;
-            margin: 4px 0 0;
-            font-size: 1.1rem;
         }
 
         /* Mini Buttons */
@@ -90,34 +49,17 @@
             margin-bottom: 4px;
             font-style: normal;
         }
-
-        /* Navbar e Ajustes */
-        .navbar-aura {
-            padding: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        #mesGlobal {
-            background: #1e293b;
-            color: white;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 12px;
-            font-weight: 600;
-            font-size: 14px;
-        }
     </style>
 </head>
 
 <body>
-
+    <!-- Barra superior -->
     <nav class="navbar-aura">
         <div class="logo-aura" style="font-weight: 800; letter-spacing: 1px;">AURA</div>
         <select id="mesGlobal"></select>
     </nav>
 
+    <!-- Container de informações requisitadas do database -->
     <div class="container px-4">
         <div class="header-section mb-4">
             <h4 id="tituloSaudacao" style="font-weight: 800;">Olá!</h4>
@@ -145,13 +87,15 @@
             </div>
         </div>
 
+        <!-- Botões que abrem os modais de envio de informações -->
         <div class="action-grid-mini">
             <button class="btn-mini" data-bs-toggle="modal" data-bs-target="#modalGasto"><i>📉</i> Gasto</button>
             <button class="btn-mini" data-bs-toggle="modal" data-bs-target="#modalRenda"><i>💰</i> Renda</button>
             <button class="btn-mini" data-bs-toggle="modal" data-bs-target="#modalReserva"><i>🏦</i> Reserva</button>
         </div>
     </div>
-
+    
+    <!-- Modal que envia informações sobre gastos do usuário -->
     <div class="modal fade" id="modalGasto" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content bg-dark border-secondary">
@@ -197,6 +141,7 @@
         </div>
     </div>
 
+    <!-- Modal que enviar informações de renda do usuário -->
     <div class="modal fade" id="modalRenda" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content bg-dark border-secondary">
@@ -217,6 +162,7 @@
         </div>
     </div>
 
+    <!-- Modal que envia informações da reserva do usuário -->
     <div class="modal fade" id="modalReserva" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content bg-dark border-secondary">
@@ -238,10 +184,15 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <script>
+
+        // URLs para acesso no database do supabase
         const SUPABASE_URL = 'https://zxftraxyutwmjoreonsa.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp4ZnRyYXh5dXR3bWpvcmVvbnNhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcxNDgzMzMsImV4cCI6MjA4MjcyNDMzM30.noOBeBltO9Bsze5Q9SWTOhHAf7tfT4hB4ozwxvXc0Fo';
         const s_client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+        // Verifica o nome do usuário e guarda no localstorage
+        // Busca o mês atual
+        // Ajusta o texto de saudação com o nome do usuário
         window.onload = async function () {
             configurarMeses();
             let nome = localStorage.getItem('nomeAuraUser') || prompt("Seu nome:");
@@ -253,6 +204,8 @@
             atualizarDashboard();
         };
 
+        // Recebe o mês que o usuário selecionou
+        // Trata o mês e joga para a função que atualiza os dados
         function configurarMeses() {
             const meses = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
             const select = document.getElementById('mesGlobal');
@@ -265,6 +218,7 @@
             select.onchange = atualizarDashboard;
         }
 
+        // Função que atualiza os dados do usuário na tela
         async function atualizarDashboard() {
             const mes = document.getElementById('mesGlobal').value;
             const { data, error } = await s_client.from('Lançamentos').select('*').eq('mes', mes);
@@ -282,6 +236,7 @@
             document.getElementById('resumoGastos').innerText = gst.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
         }
 
+        // Função que envia os dados para o database
         async function enviar(tipo) {
             const btnId = tipo === 'gasto' ? 'btnSalvarGasto' : (tipo === 'renda' ? 'btnSalvarRenda' : 'btnSalvarReserva');
             const btn = document.getElementById(btnId);
