@@ -50,19 +50,19 @@
         <div class="row g-3">
             <div class="col-12">
                 <div class="card-resumo principal">
-                    <small>Balanço Mensal</small>
+                    <small>O que sobrou</small>
                     <h1 id="saldoTotal">R$ 0,00</h1>
                 </div>
             </div>
             <div class="col-6">
                 <div class="card-resumo">
-                    <small>Quanto sobrou</small>
+                    <small>O que entrou</small>
                     <h3 id="resumoGanhos" style="color: var(--success);">R$ 0,00</h3>
                 </div>
             </div>
             <div class="col-6">
                 <div class="card-resumo">
-                    <small>Gastos</small>
+                    <small>Total de gastos</small>
                     <h3 id="resumoGastos" style="color: var(--danger);">R$ 0,00</h3>
                 </div>
             </div>
@@ -74,6 +74,13 @@
             <button class="btn-mini" data-bs-toggle="modal" data-bs-target="#modalRenda"><i>💰</i> Renda</button>
             <button class="btn-mini" data-bs-toggle="modal" data-bs-target="#modalReserva"><i>🏦</i> Reserva</button>
         </div>
+        <button class="btn btn-outline-light btn-sm mt-2" data-bs-toggle="modal" data-bs-target="#modalHistorico">
+            <svg width="16" height="16" fill="currentColor" class="me-1" viewBox="0 0 16 16">
+                <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z" />
+                <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z" />
+            </svg>
+            Ver Gastos Detalhados
+        </button>
     </div>
 
     <!-- Modal que envia informações sobre gastos do usuário -->
@@ -103,6 +110,12 @@
                                 <option value="Casa">Moradia</option>
                                 <option value="Lazer">Lazer</option>
                                 <option value="Transporte">Transporte</option>
+                                <option value="Parcela">Parcela</option>
+                                <option value="Roupas">Roupas</option>
+                                <option value="Serviço de internet">Serviço de internet</option>
+                                <option value="Viagem">Viagem</option>
+                                <option value="Fatura">Fatura passada</option>
+                                <option value="Material de trabalho">Material de trabalho</option>
                             </select>
                         </div>
                     </div>
@@ -113,6 +126,7 @@
                         <option value="Crédito">Cartão de Crédito</option>
                         <option value="Débito">Cartão de Débito</option>
                         <option value="Dinheiro">Dinheiro</option>
+                        <option value="Boleto">Boleto</option>
                     </select>
 
                     <button onclick="enviar('gasto')" id="btnSalvarGasto"
@@ -156,6 +170,48 @@
                     <input type="number" id="valReserva" class="form-control mb-3" placeholder="Valor R$">
                     <button onclick="enviar('reserva')" id="btnSalvarReserva"
                         class="btn btn-info w-100 p-3 rounded-4 fw-bold">GUARDAR</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 style="font-weight: 700; color: white;">Minhas Reservas</h5>
+            <span class="badge rounded-pill bg-primary" id="countReservas">0</span>
+        </div>
+
+        <div id="listaReservas" class="row g-3">
+            <div class="col-12 text-center py-4" id="msgVazio">
+                <p style="color: var(--text-muted); font-size: 14px;">Nenhuma reserva encontrada.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalHistorico" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content border-0" style="background: #0f172a; border-radius: 24px;">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold text-white">Histórico de Gastos</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                        <table class="table table-dark table-hover mb-0">
+                            <thead class="sticky-top bg-dark">
+                                <tr>
+                                    <th style="font-size: 11px;">Data</th>
+                                    <th style="font-size: 11px;">Descrição</th>
+                                    <th style="font-size: 11px;">Categoria</th>
+                                    <th style="font-size: 11px;" class="text-end">Valor</th>
+                                    <th style="font-size: 11px;" class="text-center">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabelaGastosBody">
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
@@ -242,22 +298,139 @@
             select.onchange = atualizarDashboard;
         }
 
-        // Função que atualiza os dados do usuário na tela
         async function atualizarDashboard() {
             const mes = document.getElementById('mesGlobal').value;
-            const { data, error } = await s_client.from('Lançamentos').select('*').eq('mes', mes);
+
+            // Pega a sessão para garantir segurança
+            const { data: { session } } = await s_client.auth.getSession();
+            if (!session) return;
+
+            const { data, error } = await s_client
+                .from('Lançamentos')
+                .select('*')
+                .eq('mes', mes)
+                .eq('user_id', session.user.id);
 
             if (error) return console.error(error);
 
-            let gnh = 0, gst = 0;
+            let gnh = 0, gst = 0, rsvTotal = 0;
+
+            // Objeto para agrupar as reservas por nome
+            // Estrutura será: { "Viagem": 500, "Reserva de Emergência": 200 }
+            let reservasAgrupadas = {};
+
             data.forEach(i => {
-                if (i.tipo === 'renda') gnh += i.valor;
-                if (i.tipo === 'gasto') gst += i.valor;
+                const valor = parseFloat(i.valor);
+
+                if (i.tipo === 'renda') gnh += valor;
+                if (i.tipo === 'gasto') gst += valor;
+
+                if (i.tipo === 'reserva') {
+                    rsvTotal += valor;
+                    const nome = i.descricao || 'Outras Reservas';
+
+                    // Se o nome já existe no objeto, soma o valor. Se não, cria um novo.
+                    if (reservasAgrupadas[nome]) {
+                        reservasAgrupadas[nome] += valor;
+                    } else {
+                        reservasAgrupadas[nome] = valor;
+                    }
+                }
             });
 
-            document.getElementById('saldoTotal').innerText = (gnh - gst).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+            // 1. Atualiza os cards de resumo no topo
+            document.getElementById('saldoTotal').innerText = (gnh - gst - rsvTotal).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
             document.getElementById('resumoGanhos').innerText = gnh.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
             document.getElementById('resumoGastos').innerText = gst.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+            // 2. Transforma o objeto agrupado em HTML
+            const containerReservas = document.getElementById('listaReservas');
+            let htmlReservas = "";
+
+            // Percorre o objeto de reservas agrupadas
+            for (const [nome, valorTotal] of Object.entries(reservasAgrupadas)) {
+                // ... dentro do loop for (const [nome, valorTotal] of Object.entries(reservasAgrupadas))
+
+                htmlReservas += `
+                <div class="col-12 col-md-6 col-lg-4">
+                    <div class="reserva-card d-flex justify-content-between align-items-center mb-2 position-relative">
+                        <div>
+                            <p class="reserva-desc" style="margin:0; font-weight:600;">${nome}</p>
+                            <p style="margin:0; font-size:11px; color:var(--accent);">Soma do mês</p>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <p class="reserva-valor" style="margin:0; color:#4ade80; font-weight:800; margin-right: 15px;">
+                                R$ ${valorTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                            </p>
+                            <button onclick="excluirReservaAgrupada('${nome}')" class="btn-close btn-close-white" style="font-size: 10px; cursor: pointer;" aria-label="Excluir"></button>
+                        </div>
+                    </div>
+                </div>`;
+            }
+
+            if (containerReservas) {
+                containerReservas.innerHTML = htmlReservas || '<p class="text-center text-muted w-100">Nenhuma reserva neste mês.</p>';
+            }
+
+            // Dentro da sua função atualizarDashboard() atual...
+
+            // Filtrar apenas os gastos
+            const listaGastos = data.filter(i => i.tipo === 'gasto');
+
+            // Ordenar por data crescente (mais antigos primeiro)
+            listaGastos.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+
+            const tabelaBody = document.getElementById('tabelaGastosBody');
+            let htmlTabela = "";
+
+            listaGastos.forEach(g => {
+                // Pegamos apenas o dia/mês da data de criação
+                const dataFormatada = new Date(g.created_at).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+                const valor = parseFloat(g.valor);
+
+                htmlTabela += `
+        <tr>
+            <td class="text-muted small">${dataFormatada}</td>
+            <td class="text-white fw-semibold">${g.descricao || 'Sem título'}</td>
+            <td><span class="badge bg-secondary" style="font-size: 10px; opacity: 0.7;">${g.categoria || 'Geral'}</span></td>
+            <td class="text-end text-danger fw-bold">R$ ${valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
+            <td class="text-center">
+                <button onclick="excluirLancamento('${g.id}')" class="btn btn-sm p-0 text-muted hover-danger">
+                   <svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/><path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/></svg>
+                </button>
+            </td>
+        </tr>
+    `;
+            });
+
+            tabelaBody.innerHTML = htmlTabela || '<tr><td colspan="5" class="text-center p-4 text-muted">Nenhum gasto para este mês.</td></tr>';
+        }
+
+        async function excluirReservaAgrupada(nomeReserva) {
+            if (!confirm(`Deseja excluir todas as reservas de "${nomeReserva}" deste mês?`)) return;
+
+            const mes = document.getElementById('mesGlobal').value;
+            const { data: { session } } = await s_client.auth.getSession();
+
+            try {
+                const { error } = await s_client
+                    .from('Lançamentos')
+                    .delete()
+                    .eq('user_id', session.user.id)
+                    .eq('mes', mes)
+                    .eq('tipo', 'reserva')
+                    .eq('descricao', nomeReserva);
+
+                if (error) throw error;
+
+                // Atualiza a tela imediatamente
+                alert("Reserva removida com sucesso!");
+                atualizarDashboard();
+
+            } catch (error) {
+                console.error("Erro ao deletar:", error.message);
+                alert("Não foi possível excluir a reserva.");
+            }
         }
 
         // Função que envia os dados para o database

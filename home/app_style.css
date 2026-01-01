@@ -38,3 +38,49 @@
     from { opacity: 0; transform: translateY(-10px); }
     to { opacity: 1; transform: translateY(0); }
 }
+
+.reserva-card {
+    background: rgba(30, 41, 59, 0.4);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 20px;
+    padding: 16px;
+    transition: all 0.3s ease;
+}
+
+.reserva-card:hover {
+    transform: translateY(-5px);
+    background: rgba(30, 41, 59, 0.6);
+    border-color: var(--accent);
+}
+
+.reserva-valor {
+    color: #4ade80; /* Cor de sucesso para o valor reservado */
+    font-weight: 800;
+    font-size: 1.1rem;
+}
+
+.reserva-desc {
+    color: white;
+    font-weight: 600;
+    margin-bottom: 2px;
+}
+
+.reserva-data {
+    color: var(--text-muted);
+    font-size: 12px;
+}
+
+/* Efeito de hover no botão de excluir dentro da tabela */
+.hover-danger:hover {
+    color: #ef4444 !important;
+    transform: scale(1.1);
+}
+
+/* Deixar o cabeçalho da tabela fixo enquanto rola o modal */
+.sticky-top {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: #1e293b !important;
+}
