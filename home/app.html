@@ -1,484 +1,469 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Aura | Controle Financeiro</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap"
-        rel="stylesheet">
-    <link rel="stylesheet" href="app_style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    
     <link rel="stylesheet" href="style/navbar.css">
     <link rel="stylesheet" href="style/cards.css">
     <link rel="stylesheet" href="style/global.css">
     <link rel="stylesheet" href="style/modais.css">
     <link rel="stylesheet" href="style/buttons-action.css">
+
+    <style>
+        /* CSS Específico para a Tabela de Histórico Moderna */
+        .modal-body-scroll { max-height: 60vh; overflow-y: auto; padding-right: 5px; }
+        .modal-body-scroll::-webkit-scrollbar { width: 6px; }
+        .modal-body-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
+        
+        .table-aura { width: 100%; border-collapse: separate; border-spacing: 0 8px; }
+        .table-aura thead th {
+            background: rgba(15, 23, 42, 0.95); color: #94a3b8; font-size: 0.75rem;
+            text-transform: uppercase; letter-spacing: 1px; padding: 15px;
+            position: sticky; top: 0; z-index: 10; border: none;
+        }
+        .table-aura tbody tr { background: rgba(30, 41, 59, 0.4); transition: 0.2s; }
+        .table-aura tbody tr:hover { background: rgba(30, 41, 59, 0.8); transform: scale(1.01); }
+        .table-aura td { padding: 16px; color: white; border: none; vertical-align: middle; }
+        .table-aura td:first-child { border-top-left-radius: 12px; border-bottom-left-radius: 12px; }
+        .table-aura td:last-child { border-top-right-radius: 12px; border-bottom-right-radius: 12px; }
+        
+        .badge-cat { padding: 5px 10px; border-radius: 8px; font-size: 0.7rem; font-weight: 700; background: rgba(129, 140, 248, 0.15); color: #818cf8; border: 1px solid rgba(129, 140, 248, 0.2); }
+        .badge-user { font-size: 0.65rem; color: #cbd5e1; background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 4px; margin-left: 5px; }
+        
+        /* Modal Glass */
+        .aura-glass {
+            background: rgba(15, 23, 42, 0.95) !important;
+            backdrop-filter: blur(20px) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            border-radius: 24px !important;
+        }
+    </style>
 </head>
 
 <body>
-    <!-- Barra superior -->
     <nav class="navbar-aura">
         <div class="nav-container">
             <div class="logo-aura">
                 <div class="logo-icon">A</div>
                 <span>AURA</span>
             </div>
-
             <div class="d-flex align-items-center gap-3">
                 <select id="mesGlobal" class="form-select"></select>
                 <button onclick="deslogar()" class="btn btn-outline-danger btn-sm border-0">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-                        <polyline points="16 17 21 12 16 7" />
-                        <line x1="21" y1="12" x2="9" y2="12" />
-                    </svg>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
                 </button>
             </div>
-        </div>
         </div>
     </nav>
 
-    <!-- Container de informações requisitadas do database -->
     <div class="container px-4">
-        <div class="container px-4">
-            <div class="header-section mb-4">
-                <h4 id="tituloSaudacao" style="font-weight: 800; color: white; margin-bottom: 4px;">Olá!</h4>
+        
+        <div class="header-section mb-4">
+            <h4 id="tituloSaudacao" style="font-weight: 800; color: white; margin-bottom: 4px;">Olá!</h4>
+            <p id="subtituloAura" style="color: #64748b; font-size: 14px; margin-bottom: 0;">Carregando seu resumo...</p>
+        </div>
 
-                <p id="subtituloAura" style="color: #64748b; font-size: 14px; margin-bottom: 0;">
-                    Carregando seu resumo...
-                </p>
+        <div class="row g-3">
+            <div class="col-12">
+                <div class="card-resumo principal">
+                    <small>Balanço Disponível</small>
+                    <h1 id="saldoTotal">R$ 0,00</h1>
+                </div>
             </div>
+            <div class="col-6">
+                <div class="card-resumo">
+                    <small>Ganhos</small>
+                    <h3 id="resumoGanhos" style="color: var(--success);">R$ 0,00</h3>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="card-resumo">
+                    <small>Gastos</small>
+                    <h3 id="resumoGastos" style="color: var(--danger);">R$ 0,00</h3>
+                </div>
+            </div>
+        </div>
 
-            <div class="row g-3">
-                ...
+        <div class="action-grid-mini">
+            <button class="btn-mini" data-bs-toggle="modal" data-bs-target="#modalGasto"><i>📉</i> Gasto</button>
+            <button class="btn-mini" data-bs-toggle="modal" data-bs-target="#modalRenda"><i>💰</i> Renda</button>
+            <button class="btn-mini" data-bs-toggle="modal" data-bs-target="#modalReserva"><i>🏦</i> Reserva</button>
+        </div>
+        
+        <button class="btn btn-outline-light btn-sm mt-2 w-100" data-bs-toggle="modal" data-bs-target="#modalHistorico" style="border-radius: 12px; border-color: rgba(255,255,255,0.1);">
+            Ver Extrato Detalhado
+        </button>
 
-                <div class="row g-3">
-                    <div class="col-12">
-                        <div class="card-resumo principal">
-                            <small>O que sobrou</small>
-                            <h1 id="saldoTotal">R$ 0,00</h1>
-                        </div>
+        <div class="container mt-4 px-0">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 style="font-weight: 700; color: white;">Minhas Reservas</h5>
+                <span class="badge rounded-pill bg-primary" id="countReservas">0</span>
+            </div>
+            <div id="listaReservas" class="row g-3">
+                <div class="col-12 text-center py-4" id="msgVazio">
+                    <p style="color: var(--text-muted); font-size: 14px;">Nenhuma reserva encontrada.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalHistorico" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content aura-glass">
+                <div class="modal-header border-0 pb-0">
+                    <div>
+                        <h5 class="modal-title fw-bold text-white">Extrato Detalhado</h5>
+                        <p class="text-muted small mb-0">Histórico completo deste mês</p>
                     </div>
-                    <div class="col-6">
-                        <div class="card-resumo">
-                            <small>O que entrou</small>
-                            <h3 id="resumoGanhos" style="color: var(--success);">R$ 0,00</h3>
-                        </div>
-                    </div>
-                    <div class="col-6">
-                        <div class="card-resumo">
-                            <small>Total de gastos</small>
-                            <h3 id="resumoGastos" style="color: var(--danger);">R$ 0,00</h3>
-                        </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="modal-body-scroll">
+                        <table class="table-aura">
+                            <thead>
+                                <tr>
+                                    <th>Dia</th>
+                                    <th>Descrição</th>
+                                    <th>Info</th>
+                                    <th class="text-end">Valor</th>
+                                    <th class="text-center" style="width: 50px;">#</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabelaGastosBody">
+                                </tbody>
+                        </table>
                     </div>
                 </div>
-
-                <!-- Botões que abrem os modais de envio de informações -->
-                <div class="action-grid-mini">
-                    <button class="btn-mini" data-bs-toggle="modal" data-bs-target="#modalGasto"><i>📉</i>
-                        Gasto</button>
-                    <button class="btn-mini" data-bs-toggle="modal" data-bs-target="#modalRenda"><i>💰</i>
-                        Renda</button>
-                    <button class="btn-mini" data-bs-toggle="modal" data-bs-target="#modalReserva"><i>🏦</i>
-                        Reserva</button>
-                </div>
-                <button class="btn btn-outline-light btn-sm mt-2" data-bs-toggle="modal"
-                    data-bs-target="#modalHistorico">
-                    <svg width="16" height="16" fill="currentColor" class="me-1" viewBox="0 0 16 16">
-                        <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z" />
-                        <path
-                            d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z" />
-                    </svg>
-                    Ver Gastos Detalhados
-                </button>
             </div>
+        </div>
+    </div>
 
-            <!-- Modal que envia informações sobre gastos do usuário -->
-            <div class="modal fade" id="modalGasto" tabindex="-1">
-                <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content bg-dark border-secondary">
-                        <div class="modal-header border-0">
-                            <h6 class="fw-bold">NOVO GASTO</h6>
-                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+    <div class="modal fade" id="modalGasto" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content aura-glass"> <div class="modal-header border-0">
+                    <h6 class="fw-bold text-white">NOVO GASTO</h6>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body pt-0">
+                    <label class="form-label text-muted small">Valor</label>
+                    <input type="number" id="valGasto" class="form-control mb-3" placeholder="R$ 0,00" style="font-size: 1.5rem; font-weight: bold; color: #fb7185;">
+
+                    <label class="form-label text-muted small">Descrição</label>
+                    <input type="text" id="descGasto" class="form-control mb-3" placeholder="Ex: Mercado">
+
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <label class="form-label text-muted small">Data</label>
+                            <input type="date" id="dataGasto" class="form-control">
                         </div>
-                        <div class="modal-body pt-0">
-                            <label class="form-label text-muted small">Descrição</label>
-                            <input type="text" id="descGasto" class="form-control mb-3" placeholder="Ex: Mercado">
-
-                            <label class="form-label text-muted small">Valor</label>
-                            <input type="number" id="valGasto" class="form-control mb-3" placeholder="R$ 0,00">
-
-                            <div class="row g-2 mb-3">
-                                <div class="col-6">
-                                    <label class="form-label text-muted small">Data</label>
-                                    <input type="date" id="dataGasto" class="form-control">
-                                </div>
-                                <div class="col-6">
-                                    <label class="form-label text-muted small">Categoria</label>
-                                    <select id="catGasto" class="form-select">
-                                        <option value="Alimentação">Alimentação</option>
-                                        <option value="Casa">Moradia</option>
-                                        <option value="Lazer">Lazer</option>
-                                        <option value="Transporte">Transporte</option>
-                                        <option value="Parcela">Parcela</option>
-                                        <option value="Roupas">Roupas</option>
-                                        <option value="Serviço de internet">Serviço de internet</option>
-                                        <option value="Viagem">Viagem</option>
-                                        <option value="Fatura">Fatura passada</option>
-                                        <option value="Material de trabalho">Material de trabalho</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <label class="form-label text-muted small">Forma de Pagamento</label>
-                            <select id="pagGasto" class="form-select mb-4">
-                                <option value="Pix">Pix</option>
-                                <option value="Crédito">Cartão de Crédito</option>
-                                <option value="Débito">Cartão de Débito</option>
-                                <option value="Dinheiro">Dinheiro</option>
-                                <option value="Boleto">Boleto</option>
+                        <div class="col-6">
+                            <label class="form-label text-muted small">Categoria</label>
+                            <select id="catGasto" class="form-select">
+                                <option value="Alimentação">🍔 Alimentação</option>
+                                <option value="Casa">🏠 Moradia</option>
+                                <option value="Lazer">🎉 Lazer</option>
+                                <option value="Transporte">🚗 Transporte</option>
+                                <option value="Roupas">👕 Roupas</option>
+                                <option value="Viagem">✈️ Viagem</option>
+                                <option value="Fatura">🧾 Fatura</option>
+                                <option value="Material de trabalho">💼 Trabalho</option>
                             </select>
-
-                            <button onclick="enviar('gasto')" id="btnSalvarGasto"
-                                class="btn btn-primary w-100 p-3 rounded-4 fw-bold">SALVAR LANÇAMENTO</button>
                         </div>
                     </div>
-                </div>
-            </div>
 
-            <!-- Modal que enviar informações de renda do usuário -->
-            <div class="modal fade" id="modalRenda" tabindex="-1">
-                <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content bg-dark border-secondary">
-                        <div class="modal-header border-0">
-                            <h6 class="fw-bold text-success">REGISTRAR ENTRADA</h6><button type="button"
-                                class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                        </div>
-                        <div class="modal-body pt-0">
-                            <select id="catRenda" class="form-select mb-3">
-                                <option value="Salário">Salário</option>
-                                <option value="Extra">Renda Extra</option>
-                            </select>
-                            <input type="number" id="valRenda" class="form-control mb-3" placeholder="Valor R$">
-                            <button onclick="enviar('renda')" id="btnSalvarRenda"
-                                class="btn btn-success w-100 p-3 rounded-4 fw-bold">CONFIRMAR</button>
+                    <div id="divQuemGastou" class="mb-3" style="display: none;">
+                        <label class="form-label text-muted small">Quem gastou?</label>
+                        <div class="d-flex gap-2">
+                            <input type="radio" class="btn-check" name="quemGastou" id="radioUser" value="user" checked>
+                            <label class="btn btn-outline-light btn-sm flex-fill" for="radioUser" id="labelUser">Eu</label>
+                            <input type="radio" class="btn-check" name="quemGastou" id="radioPartner" value="partner">
+                            <label class="btn btn-outline-light btn-sm flex-fill" for="radioPartner" id="labelPartner">Parceiro</label>
                         </div>
                     </div>
+
+                    <label class="form-label text-muted small">Pagamento</label>
+                    <select id="pagGasto" class="form-select mb-4">
+                        <option value="Pix">💠 Pix</option>
+                        <option value="Crédito">💳 Crédito</option>
+                        <option value="Débito">💳 Débito</option>
+                        <option value="Dinheiro">💵 Dinheiro</option>
+                    </select>
+
+                    <button onclick="enviar('gasto')" id="btnSalvarGasto" class="btn btn-primary w-100 p-3 rounded-4 fw-bold">SALVAR</button>
                 </div>
             </div>
+        </div>
+    </div>
 
-            <!-- Modal que envia informações da reserva do usuário -->
-            <div class="modal fade" id="modalReserva" tabindex="-1">
-                <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content bg-dark border-secondary">
-                        <div class="modal-header border-0">
-                            <h6 class="fw-bold text-info">NOVA RESERVA</h6><button type="button"
-                                class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+    <div class="modal fade" id="modalRenda" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content aura-glass">
+                <div class="modal-header border-0">
+                    <h6 class="fw-bold text-success">REGISTRAR ENTRADA</h6><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body pt-0">
+                    <select id="catRenda" class="form-select mb-3">
+                        <option value="Salário">Salário</option>
+                        <option value="Extra">Renda Extra</option>
+                    </select>
+                    <input type="number" id="valRenda" class="form-control mb-3" placeholder="Valor R$">
+                    <button onclick="enviar('renda')" id="btnSalvarRenda" class="btn btn-success w-100 p-3 rounded-4 fw-bold">CONFIRMAR</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalReserva" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content aura-glass">
+                <div class="modal-header border-0">
+                    <h6 class="fw-bold text-info">NOVA RESERVA</h6><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body pt-0">
+                    <input type="text" id="descReserva" class="form-control mb-3" placeholder="Objetivo da reserva">
+                    <input type="number" id="valReserva" class="form-control mb-3" placeholder="Valor R$">
+                    <button onclick="enviar('reserva')" id="btnSalvarReserva" class="btn btn-info w-100 p-3 rounded-4 fw-bold">GUARDAR</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script>
+        const SUPABASE_URL = 'https://zxftraxyutwmjoreonsa.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp4ZnRyYXh5dXR3bWpvcmVvbnNhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcxNDgzMzMsImV4cCI6MjA4MjcyNDMzM30.noOBeBltO9Bsze5Q9SWTOhHAf7tfT4hB4ozwxvXc0Fo';
+        const s_client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        async function checarSessao() {
+            const { data: { session } } = await s_client.auth.getSession();
+            if (!session) {
+                window.location.href = '../login/login.html';
+                return;
+            }
+
+            const meta = session.user.user_metadata;
+            const saudacaoElemento = document.getElementById('tituloSaudacao');
+            const subtituloElemento = document.getElementById('subtituloAura');
+
+            // Configura modal de gasto para casal se necessário
+            configurarModalCasal(meta);
+
+            if (meta.tipo_uso === 'casal' && meta.parceiro_nome) {
+                saudacaoElemento.innerText = `Bem-vindos, ${meta.display_name} & ${meta.parceiro_nome}!`;
+                if(subtituloElemento) subtituloElemento.innerText = "❤️ Gerenciando a vida a dois.";
+            } else {
+                let prefixo = (meta.genero === 'f') ? "Bem-vinda" : "Bem-vindo";
+                saudacaoElemento.innerText = `${prefixo}, ${meta.display_name}!`;
+                if(subtituloElemento) subtituloElemento.innerText = "Seu controle financeiro pessoal.";
+            }
+        }
+
+        // Mostra opções de "Quem gastou" se for casal
+        function configurarModalCasal(meta) {
+            const divQuem = document.getElementById('divQuemGastou');
+            if (meta.tipo_uso === 'casal') {
+                divQuem.style.display = 'block';
+                document.getElementById('labelUser').innerText = meta.display_name || 'Eu';
+                document.getElementById('labelPartner').innerText = meta.parceiro_nome || 'Parceiro';
+            } else {
+                divQuem.style.display = 'none';
+            }
+        }
+
+        async function deslogar() {
+            await s_client.auth.signOut();
+            window.location.href = '../login/login.html';
+        }
+
+        window.onload = async function () {
+            checarSessao();
+            configurarMeses();
+            if (document.getElementById('dataGasto')) {
+                document.getElementById('dataGasto').valueAsDate = new Date();
+            }
+            atualizarDashboard();
+        };
+
+        function configurarMeses() {
+            const meses = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+            const select = document.getElementById('mesGlobal');
+            meses.forEach((m, i) => {
+                let opt = document.createElement('option');
+                opt.value = m; opt.innerText = m;
+                if (i === new Date().getMonth()) opt.selected = true;
+                select.appendChild(opt);
+            });
+            select.onchange = atualizarDashboard;
+        }
+
+        async function atualizarDashboard() {
+            const mes = document.getElementById('mesGlobal').value;
+            const { data: { session } } = await s_client.auth.getSession();
+            if (!session) return;
+
+            // Busca TODOS os lançamentos do usuário
+            const { data: todosDados, error } = await s_client
+                .from('Lançamentos')
+                .select('*')
+                .eq('user_id', session.user.id);
+
+            if (error) return console.error(error);
+
+            let gnh = 0, gst = 0, rsvAcumuladoTotal = 0;
+            let reservasAgrupadas = {};
+
+            // Lógica de Soma
+            todosDados.forEach(i => {
+                const valor = parseFloat(i.valor);
+                
+                // Reservas (Soma Global)
+                if (i.tipo === 'reserva') {
+                    rsvAcumuladoTotal += valor;
+                    const nome = i.descricao || 'Geral';
+                    reservasAgrupadas[nome] = (reservasAgrupadas[nome] || 0) + valor;
+                }
+
+                // Ganhos e Gastos (Soma Mensal)
+                if (i.mes === mes) {
+                    if (i.tipo === 'renda') gnh += valor;
+                    if (i.tipo === 'gasto') gst += valor;
+                }
+            });
+
+            // Atualiza Dashboard
+            document.getElementById('saldoTotal').innerText = (gnh - gst).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+            document.getElementById('resumoGanhos').innerText = gnh.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+            document.getElementById('resumoGastos').innerText = gst.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+            // Renderiza Reservas
+            const containerReservas = document.getElementById('listaReservas');
+            let htmlReservas = "";
+            for (const [nome, valorTotal] of Object.entries(reservasAgrupadas)) {
+                htmlReservas += `
+                <div class="col-12 col-md-6 col-lg-4">
+                    <div class="reserva-card d-flex justify-content-between align-items-center mb-2 position-relative">
+                        <div>
+                            <p class="reserva-desc" style="margin:0; font-weight:600;">${nome}</p>
+                            <p style="margin:0; font-size:11px; color:#4ade80;">Total Acumulado</p>
                         </div>
-                        <div class="modal-body pt-0">
-                            <input type="text" id="descReserva" class="form-control mb-3"
-                                placeholder="Objetivo da reserva">
-                            <input type="number" id="valReserva" class="form-control mb-3" placeholder="Valor R$">
-                            <button onclick="enviar('reserva')" id="btnSalvarReserva"
-                                class="btn btn-info w-100 p-3 rounded-4 fw-bold">GUARDAR</button>
+                        <div class="d-flex align-items-center">
+                            <p class="reserva-valor" style="margin:0; color:#4ade80; font-weight:800; margin-right: 15px;">
+                                R$ ${valorTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                            </p>
+                            <button onclick="excluirReservaAgrupadaGlobal('${nome}')" class="btn-close btn-close-white" style="font-size: 10px; cursor: pointer;"></button>
                         </div>
                     </div>
-                </div>
-            </div>
+                </div>`;
+            }
+            if(containerReservas) containerReservas.innerHTML = htmlReservas || '<p class="text-center text-muted small w-100">Nenhuma reserva criada.</p>';
 
-            <div class="container mt-4">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h5 style="font-weight: 700; color: white;">Minhas Reservas</h5>
-                    <span class="badge rounded-pill bg-primary" id="countReservas">0</span>
-                </div>
+            // Renderiza Tabela de Histórico (Mês Atual)
+            const listaGastosMes = todosDados.filter(i => i.tipo === 'gasto' && i.mes === mes);
+            listaGastosMes.sort((a, b) => new Date(b.created_at) - new Date(a.created_at)); // Mais recentes primeiro
 
-                <div id="listaReservas" class="row g-3">
-                    <div class="col-12 text-center py-4" id="msgVazio">
-                        <p style="color: var(--text-muted); font-size: 14px;">Nenhuma reserva encontrada.</p>
-                    </div>
-                </div>
-            </div>
+            const tabelaBody = document.getElementById('tabelaGastosBody');
+            let htmlTabela = "";
+            const icones = { 'Alimentação': '🍔', 'Casa': '🏠', 'Lazer': '🎉', 'Transporte': '🚗', 'Roupas': '👕', 'Viagem': '✈️', 'Fatura': '🧾' };
 
-            <div class="modal fade" id="modalHistorico" tabindex="-1" aria-hidden="true">
-                <div class="modal-dialog modal-lg modal-dialog-centered">
-                    <div class="modal-content border-0" style="background: #0f172a; border-radius: 24px;">
-                        <div class="modal-header border-0 pb-0">
-                            <h5 class="modal-title fw-bold text-white">Histórico de Gastos</h5>
-                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                                aria-label="Close"></button>
+            listaGastosMes.forEach(g => {
+                const dia = new Date(g.created_at).getDate().toString().padStart(2, '0');
+                const valor = parseFloat(g.valor);
+                const icone = icones[g.categoria] || '💸';
+                
+                // Badge se tiver responsável (casal)
+                let quemBadge = g.responsavel ? `<span class="badge-user">${g.responsavel}</span>` : '';
+
+                htmlTabela += `
+                <tr>
+                    <td class="fw-bold text-muted" style="font-size: 1.1rem;">${dia}</td>
+                    <td>
+                        <div class="d-flex flex-column">
+                            <span class="text-white fw-semibold" style="font-size: 0.95rem;">${g.descricao || 'Gasto'}</span>
+                            <span class="text-muted" style="font-size: 0.75rem;">${g.pagamento || 'Débito'}</span>
                         </div>
-                        <div class="modal-body">
-                            <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
-                                <table class="table table-dark table-hover mb-0">
-                                    <thead class="sticky-top bg-dark">
-                                        <tr>
-                                            <th style="font-size: 11px;">Data</th>
-                                            <th style="font-size: 11px;">Descrição</th>
-                                            <th style="font-size: 11px;">Categoria</th>
-                                            <th style="font-size: 11px;" class="text-end">Valor</th>
-                                            <th style="font-size: 11px;" class="text-center">Ações</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="tabelaGastosBody">
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                    </td>
+                    <td><span class="badge-cat">${icone} ${g.categoria}</span>${quemBadge}</td>
+                    <td class="text-end"><span style="color: #fb7185; font-weight: 700;">- R$ ${valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span></td>
+                    <td class="text-center">
+                        <button onclick="excluirLancamento('${g.id}')" class="btn btn-sm text-secondary p-0" title="Excluir">❌</button>
+                    </td>
+                </tr>`;
+            });
+            tabelaBody.innerHTML = htmlTabela || '<tr><td colspan="5" class="text-center p-5 text-muted">Sem gastos este mês.</td></tr>';
+        }
 
-            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-            <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+        async function enviar(tipo) {
+            const btnId = tipo === 'gasto' ? 'btnSalvarGasto' : (tipo === 'renda' ? 'btnSalvarRenda' : 'btnSalvarReserva');
+            const btn = document.getElementById(btnId);
+            const dados = { tipo, mes: document.getElementById('mesGlobal').value };
 
-            <script>
+            try {
+                const { data: { session } } = await s_client.auth.getSession();
+                dados.user_id = session.user.id; // Garante o ID
 
-                // URLs para acesso no database do supabase
-                const SUPABASE_URL = 'https://zxftraxyutwmjoreonsa.supabase.co';
-                const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp4ZnRyYXh5dXR3bWpvcmVvbnNhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcxNDgzMzMsImV4cCI6MjA4MjcyNDMzM30.noOBeBltO9Bsze5Q9SWTOhHAf7tfT4hB4ozwxvXc0Fo';
-                const s_client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-                // Verifica se o usuário está logado logo ao carregar a página
-                async function verificarSessao() {
-                    const { data: { session } } = await s_client.auth.getSession();
-                    if (!session) {
-                        window.location.href = '../login/login.html'; // Se não tiver logado, volta pro login
+                if (tipo === 'gasto') {
+                    dados.descricao = document.getElementById('descGasto').value;
+                    dados.valor = parseFloat(document.getElementById('valGasto').value);
+                    dados.data = document.getElementById('dataGasto').value;
+                    dados.categoria = document.getElementById('catGasto').value;
+                    dados.pagamento = document.getElementById('pagGasto').value;
+                    
+                    // Verifica quem gastou (Casal)
+                    const divQuem = document.getElementById('divQuemGastou');
+                    if (divQuem && divQuem.style.display !== 'none') {
+                        const quem = document.querySelector('input[name="quemGastou"]:checked').value;
+                        const meta = session.user.user_metadata;
+                        dados.responsavel = (quem === 'user') ? meta.display_name : meta.parceiro_nome;
                     }
+                } 
+                else if (tipo === 'renda') {
+                    dados.valor = parseFloat(document.getElementById('valRenda').value);
+                    dados.categoria = document.getElementById('catRenda').value;
+                    dados.descricao = "Entrada";
+                } 
+                else if (tipo === 'reserva') {
+                    dados.valor = parseFloat(document.getElementById('valReserva').value);
+                    dados.descricao = document.getElementById('descReserva').value;
+                    dados.categoria = "Investimento";
                 }
 
-                verificarSessao();
-                // 1. Verificar se o usuário está logado
-                // 1. Verificar se o usuário está logado e definir saudação
-                async function checarSessao() {
-                    const { data: { session } } = await s_client.auth.getSession();
+                if (!dados.valor) return alert("Insira um valor");
+                
+                btn.disabled = true; 
+                btn.innerText = "Salvando...";
 
-                    if (!session) {
-                        window.location.href = '../login/login.html';
-                        return;
-                    }
+                const { error } = await s_client.from('Lançamentos').insert([dados]);
+                if (error) throw error;
 
-                    const meta = session.user.user_metadata;
-                    const saudacaoElemento = document.getElementById('tituloSaudacao');
-                    const subtituloElemento = document.querySelector('.header-section p');
+                location.reload();
+            } catch (err) {
+                alert("Erro: " + err.message);
+                btn.disabled = false;
+                btn.innerText = "Tentar Novamente";
+            }
+        }
 
-                    // Lógica de Gênero
-                    let prefixo = "Olá";
-                    if (meta.genero === 'f') prefixo = "Bem-vinda";
-                    else if (meta.genero === 'm') prefixo = "Bem-vindo";
+        async function excluirLancamento(id) {
+            if(!confirm("Excluir item?")) return;
+            const { error } = await s_client.from('Lançamentos').delete().eq('id', id);
+            if(!error) atualizarDashboard();
+        }
 
-                    // Lógica de Casal vs Individual
-                    if (meta.tipo_uso === 'casal' && meta.parceiro_nome) {
-                        saudacaoElemento.innerText = `Bem-vindos, ${meta.display_name} & ${meta.parceiro_nome}!`;
-                        if (subtituloElemento) subtituloElemento.innerText = "❤️ Gerenciando a vida a dois.";
-                    } else {
-                        saudacaoElemento.innerText = `${prefixo}, ${meta.display_name}!`;
-                        if (subtituloElemento) subtituloElemento.innerText = "Aqui está seu resumo financeiro individual.";
-                    }
-                }
-
-                // 2. Função para Fazer Logout (Sair)
-                async function deslogar() {
-                    const { error } = await s_client.auth.signOut();
-                    if (error) {
-                        alert("Erro ao sair: " + error.message);
-                    } else {
-                        window.location.href = '../login/login.html';
-                    }
-                }
-
-                // Inicia a verificação assim que a página carrega
-                checarSessao();
-
-                // Verifica o nome do usuário e guarda no localstorage
-                // Busca o mês atual
-                // Ajusta o texto de saudação com o nome do usuário
-                window.onload = async function () {
-                    configurarMeses();
-                    // Define a data padrão no modal de gasto
-                    if (document.getElementById('dataGasto')) {
-                        document.getElementById('dataGasto').valueAsDate = new Date();
-                    }
-                    atualizarDashboard();
-                };
-                // Recebe o mês que o usuário selecionou
-                // Trata o mês e joga para a função que atualiza os dados
-                function configurarMeses() {
-                    const meses = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
-                    const select = document.getElementById('mesGlobal');
-                    meses.forEach((m, i) => {
-                        let opt = document.createElement('option');
-                        opt.value = m; opt.innerText = m;
-                        if (i === new Date().getMonth()) opt.selected = true;
-                        select.appendChild(opt);
-                    });
-                    select.onchange = atualizarDashboard;
-                }
-
-                async function atualizarDashboard() {
-                    const mes = document.getElementById('mesGlobal').value;
-
-                    // Pega a sessão para garantir segurança
-                    const { data: { session } } = await s_client.auth.getSession();
-                    if (!session) return;
-
-                    // BUSCA 1: Pegamos TUDO do usuário (sem filtrar mês ainda) para processar as reservas globais
-                    const { data: todosDados, error } = await s_client
-                        .from('Lançamentos')
-                        .select('*')
-                        .eq('user_id', session.user.id);
-
-                    if (error) return console.error(error);
-
-                    let gnh = 0, gst = 0, rsvAcumuladoTotal = 0;
-                    let reservasAgrupadas = {};
-
-                    // Processamos os dados
-                    todosDados.forEach(i => {
-                        const valor = parseFloat(i.valor);
-
-                        // LÓGICA DE RESERVA: Independe do mês (Acumulado histórico)
-                        if (i.tipo === 'reserva') {
-                            rsvAcumuladoTotal += valor;
-                            const nome = i.descricao || 'Outras Reservas';
-                            if (reservasAgrupadas[nome]) {
-                                reservasAgrupadas[nome] += valor;
-                            } else {
-                                reservasAgrupadas[nome] = valor;
-                            }
-                        }
-
-                        // LÓGICA DE GANHOS/GASTOS: Somente se for do mês selecionado
-                        if (i.mes === mes) {
-                            if (i.tipo === 'renda') gnh += valor;
-                            if (i.tipo === 'gasto') gst += valor;
-                        }
-                    });
-
-                    // 1. Atualiza os cards de resumo no topo
-                    // O saldo total aqui reflete o mês, mas você pode ajustar se preferir o saldo histórico
-                    document.getElementById('saldoTotal').innerText = (gnh - gst).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-                    document.getElementById('resumoGanhos').innerText = gnh.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-                    document.getElementById('resumoGastos').innerText = gst.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-
-                    // 2. Transforma o objeto de reservas acumuladas em HTML
-                    const containerReservas = document.getElementById('listaReservas');
-                    let htmlReservas = "";
-
-                    for (const [nome, valorTotal] of Object.entries(reservasAgrupadas)) {
-                        htmlReservas += `
-        <div class="col-12 col-md-6 col-lg-4">
-            <div class="reserva-card d-flex justify-content-between align-items-center mb-2 position-relative">
-                <div>
-                    <p class="reserva-desc" style="margin:0; font-weight:600;">${nome}</p>
-                    <p style="margin:0; font-size:11px; color:#4ade80;">Total Acumulado</p>
-                </div>
-                <div class="d-flex align-items-center">
-                    <p class="reserva-valor" style="margin:0; color:#4ade80; font-weight:800; margin-right: 15px;">
-                        R$ ${valorTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                    </p>
-                    <button onclick="excluirReservaAgrupadaGlobal('${nome}')" class="btn-close btn-close-white" style="font-size: 10px; cursor: pointer;"></button>
-                </div>
-            </div>
-        </div>`;
-                    }
-
-                    if (containerReservas) {
-                        containerReservas.innerHTML = htmlReservas || '<p class="text-center text-muted w-100">Crie sua primeira reserva!</p>';
-                    }
-
-                    // 3. Tabela de Gastos (Filtrada pelo mês selecionado)
-                    const listaGastosMes = todosDados.filter(i => i.tipo === 'gasto' && i.mes === mes);
-                    listaGastosMes.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
-
-                    const tabelaBody = document.getElementById('tabelaGastosBody');
-                    let htmlTabela = "";
-
-                    listaGastosMes.forEach(g => {
-                        const dataFormatada = new Date(g.created_at).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
-                        const valor = parseFloat(g.valor);
-
-                        htmlTabela += `
-        <tr>
-            <td class="text-muted small">${dataFormatada}</td>
-            <td class="text-white fw-semibold">${g.descricao || 'Sem título'}</td>
-            <td><span class="badge bg-secondary" style="font-size: 10px; opacity: 0.7;">${g.categoria || 'Geral'}</span></td>
-            <td class="text-end text-danger fw-bold">R$ ${valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
-            <td class="text-center">
-                <button onclick="excluirLancamento('${g.id}')" class="btn btn-sm p-0 text-muted hover-danger">
-                   <svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/><path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/></svg>
-                </button>
-            </td>
-        </tr>`;
-                    });
-
-                    tabelaBody.innerHTML = htmlTabela || '<tr><td colspan="5" class="text-center p-4 text-muted">Nenhum gasto para este mês.</td></tr>';
-                }
-
-                async function excluirReservaAgrupada(nomeReserva) {
-                    if (!confirm(`Deseja excluir todas as reservas de "${nomeReserva}" deste mês?`)) return;
-
-                    const mes = document.getElementById('mesGlobal').value;
-                    const { data: { session } } = await s_client.auth.getSession();
-
-                    try {
-                        const { error } = await s_client
-                            .from('Lançamentos')
-                            .delete()
-                            .eq('user_id', session.user.id)
-                            .eq('mes', mes)
-                            .eq('tipo', 'reserva')
-                            .eq('descricao', nomeReserva);
-
-                        if (error) throw error;
-
-                        // Atualiza a tela imediatamente
-                        alert("Reserva removida com sucesso!");
-                        atualizarDashboard();
-
-                    } catch (error) {
-                        console.error("Erro ao deletar:", error.message);
-                        alert("Não foi possível excluir a reserva.");
-                    }
-                }
-
-                // Função que envia os dados para o database
-                async function enviar(tipo) {
-                    const btnId = tipo === 'gasto' ? 'btnSalvarGasto' : (tipo === 'renda' ? 'btnSalvarRenda' : 'btnSalvarReserva');
-                    const btn = document.getElementById(btnId);
-                    const dados = { tipo, mes: document.getElementById('mesGlobal').value };
-
-                    try {
-                        if (tipo === 'gasto') {
-                            dados.descricao = document.getElementById('descGasto').value;
-                            dados.valor = parseFloat(document.getElementById('valGasto').value);
-                            dados.data = document.getElementById('dataGasto').value;
-                            dados.categoria = document.getElementById('catGasto').value;
-                            dados.pagamento = document.getElementById('pagGasto').value;
-                        } else if (tipo === 'renda') {
-                            dados.valor = parseFloat(document.getElementById('valRenda').value);
-                            dados.categoria = document.getElementById('catRenda').value;
-                            dados.descricao = "Entrada";
-                        } else if (tipo === 'reserva') {
-                            dados.valor = parseFloat(document.getElementById('valReserva').value);
-                            dados.descricao = document.getElementById('descReserva').value;
-                            dados.categoria = "Investimento";
-                        }
-
-                        if (!dados.valor) return alert("Insira um valor");
-                        btn.disabled = true; btn.innerText = "PROCESSANDO...";
-
-                        const { error } = await s_client.from('Lançamentos').insert([dados]);
-                        if (error) throw error;
-
-                        location.reload();
-                    } catch (err) {
-                        alert("Erro: " + err.message);
-                        btn.disabled = false;
-                    }
-                }
-            </script>
+        async function excluirReservaAgrupadaGlobal(nome) {
+            if(!confirm(`Apagar TODAS as reservas de "${nome}"?`)) return;
+            const { data: { session } } = await s_client.auth.getSession();
+            const { error } = await s_client.from('Lançamentos').delete()
+                .eq('user_id', session.user.id)
+                .eq('tipo', 'reserva')
+                .eq('descricao', nome);
+            if(!error) { alert("Reserva zerada!"); atualizarDashboard(); }
+        }
+    </script>
 </body>
-
 </html>
