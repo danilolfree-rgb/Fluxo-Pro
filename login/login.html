@@ -8,6 +8,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap"
         rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="css/global.css">
     <link rel="stylesheet" href="css/modais.css">
     <style>
@@ -141,6 +142,74 @@
             color: white;
             text-shadow: 0 0 10px var(--accent);
         }
+
+        #modalPerfil .form-control,
+        #modalPerfil .form-select {
+            background: rgba(255, 255, 255, 0.05) !important;
+            color: white !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        }
+
+        #modalPerfil option {
+            background: #0f172a;
+            /* Cor de fundo das opções do select */
+        }
+
+        /* Customização do Modal Aura */
+        .modal-content.aura-glass {
+            background: rgba(15, 23, 42, 0.8) !important;
+            backdrop-filter: blur(25px) !important;
+            -webkit-backdrop-filter: blur(25px) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+            color: white;
+        }
+
+        .modal-header,
+        .modal-footer {
+            border: none !important;
+        }
+
+        .modal-body .form-label {
+            color: var(--accent);
+            font-weight: 600;
+            font-size: 0.75rem;
+            margin-top: 10px;
+        }
+
+        .modal-body .form-control,
+        .modal-body .form-select {
+            background: rgba(2, 6, 23, 0.5) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            color: white !important;
+            border-radius: 12px;
+        }
+
+        .modal-body .form-control:focus,
+        .modal-body .form-select:focus {
+            border-color: var(--accent) !important;
+            box-shadow: 0 0 0 3px var(--accent-glow) !important;
+        }
+
+        /* Estilo para as opções dentro do select no modo escuro */
+        select option {
+            background: #0f172a;
+            color: white;
+        }
+
+        .btn-finalizar {
+            background: linear-gradient(135deg, var(--accent) 0%, #6366f1 100%);
+            border: none;
+            padding: 14px;
+            font-weight: 800;
+            border-radius: 12px;
+            transition: 0.3s;
+        }
+
+        .btn-finalizar:hover {
+            transform: scale(1.02);
+            filter: brightness(1.1);
+        }
     </style>
 </head>
 
@@ -150,24 +219,105 @@
         <div class="logo-login">AURA</div>
         <h5 id="authTitle" class="mb-4">Bem-vindo de volta</h5>
 
-        <div class="text-start">
-            <div id="nomeContainer" style="display: none;">
-                <label class="form-label">Como quer ser chamado?</label>
-                <input type="text" id="nome" class="form-control mb-3" placeholder="Ex: Lucas">
-            </div>
+        <label class="form-label">E-mail</label>
+        <input type="email" id="email" class="form-control mb-3" placeholder="seu@email.com">
 
-            <label class="form-label">E-mail</label>
-            <input type="email" id="email" class="form-control mb-3" placeholder="seu@email.com">
-
-            <label class="form-label">Senha</label>
-            <input type="password" id="password" class="form-control mb-3" placeholder="••••••••">
-        </div>
+        <label class="form-label">Senha</label>
+        <input type="password" id="password" class="form-control mb-3" placeholder="••••••••">
 
         <button class="btn-login" id="btnAuth" onclick="handleAuth()">Entrar</button>
 
         <p class="switch-auth" onclick="toggleAuth()">
             Não tem uma conta? <b id="toggleText">Cadastre-se</b>
         </p>
+    </div>
+
+    </div>
+
+    <div class="modal fade" id="modalPerfil" data-bs-backdrop="static" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content"
+                style="background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 32px; box-shadow: 0 25px 50px rgba(0,0,0,0.5);">
+
+                <div class="modal-body p-4 text-center">
+                    <div
+                        style="font-size: 1.5rem; font-weight: 900; letter-spacing: 4px; background: linear-gradient(135deg, #fff 0%, #818cf8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 5px;">
+                        AURA</div>
+                    <h4 class="fw-bold text-white mb-1">Configure seu Perfil</h4>
+                    <p style="color: #64748b; font-size: 0.85rem;" class="mb-4">Como você deseja utilizar a plataforma?
+                    </p>
+
+                    <div class="text-start">
+                        <label
+                            style="font-size: 0.7rem; color: #818cf8; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;">Modo
+                            de Uso</label>
+                        <select id="tipoUso" class="form-control mb-3" onchange="toggleCamposCasal()"
+                            style="background: rgba(2, 6, 23, 0.5); border: 1px solid rgba(255,255,255,0.1); color: white;">
+                            <option value="individual">Individual (Só eu)</option>
+                            <option value="casal">Em Casal (Nós dois)</option>
+                        </select>
+
+                        <div class="row g-2">
+                            <div class="col-7">
+                                <label
+                                    style="font-size: 0.7rem; color: #818cf8; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;">Seu
+                                    Nome</label>
+                                <input type="text" id="nomeUser" class="form-control"
+                                    style="background: rgba(2, 6, 23, 0.5); border: 1px solid rgba(255,255,255,0.1); color: white;"
+                                    placeholder="Ex: Lucas">
+                            </div>
+                            <div class="col-5">
+                                <label
+                                    style="font-size: 0.7rem; color: #818cf8; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;">Gênero</label>
+                                <select id="generoUser" class="form-control"
+                                    style="background: rgba(2, 6, 23, 0.5); border: 1px solid rgba(255,255,255,0.1); color: white;">
+                                    <option value="m">Masc.</option>
+                                    <option value="f">Fem.</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div id="sessaoCasal"
+                            style="display: none; margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1);">
+                            <div class="row g-2">
+                                <div class="col-7">
+                                    <label
+                                        style="font-size: 0.7rem; color: #818cf8; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;">Nome
+                                        do Parceiro</label>
+                                    <input type="text" id="nomeParceiro" class="form-control"
+                                        style="background: rgba(2, 6, 23, 0.5); border: 1px solid rgba(255,255,255,0.1); color: white;"
+                                        placeholder="Ex: Ana">
+                                </div>
+                                <div class="col-5">
+                                    <label
+                                        style="font-size: 0.7rem; color: #818cf8; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;">Gênero</label>
+                                    <select id="generoParceiro" class="form-control"
+                                        style="background: rgba(2, 6, 23, 0.5); border: 1px solid rgba(255,255,255,0.1); color: white;">
+                                        <option value="f">Fem.</option>
+                                        <option value="m">Masc.</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row g-2 mt-4">
+                        <div class="col-4">
+                            <button class="btn" onclick="window.location.reload()"
+                                style="width: 100%; padding: 16px; border-radius: 16px; font-weight: 600; color: #64748b; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); transition: 0.3s;">
+                                Voltar
+                            </button>
+                        </div>
+                        <div class="col-8">
+                            <button class="btn-login" onclick="finalizarCadastro()"
+                                style="margin-top: 0 !important; width: 100%;">
+                                FINALIZAR
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -183,7 +333,6 @@
             const titulo = document.getElementById('authTitle');
             const btn = document.getElementById('btnAuth');
             const link = document.getElementById('toggleText');
-            const nomeContainer = document.getElementById('nomeContainer');
 
             if (modoLogin) {
                 titulo.innerText = 'Bem-vindo de volta';
@@ -198,37 +347,79 @@
             }
         }
 
+        // Variáveis globais temporárias para guardar e-mail e senha
+        let tempEmail = "";
+        let tempPass = "";
+
+        // 1. Alternar visualização do casal no modal
+        function toggleCamposCasal() {
+            const tipo = document.getElementById('tipoUso').value;
+            document.getElementById('sessaoCasal').style.display = (tipo === 'casal') ? 'block' : 'none';
+        }
+
+        // 2. Função disparada pelo botão principal do formulário
         async function handleAuth() {
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
-            const nome = document.getElementById('nome').value.trim();
-            const btn = document.getElementById('btnAuth');
 
-            btn.disabled = true;
-            btn.innerHTML = 'Carregando...';
+            if (!email || !password) return alert("Preencha e-mail e senha!");
 
-            try {
-                if (modoLogin) {
-                    const { error } = await s_client.auth.signInWithPassword({ email, password });
-                    if (error) throw error;
-                    window.location.href = '../home/app.html';
-                } else {
-                    // CADASTRO COM METADADOS (NOME)
-                    const { data, error } = await s_client.auth.signUp({
-                        email,
-                        password,
-                        options: {
-                            data: { display_name: nome } // Salva o nome aqui
-                        }
-                    });
-                    if (error) throw error;
-                    window.location.href = '../home/app.html';
+            if (modoLogin) {
+                // LOGIN DIRETO
+                const { error } = await s_client.auth.signInWithPassword({ email, password });
+                if (error) return alert(error.message);
+                window.location.href = '../home/app.html';
+            } else {
+                // CADASTRO: Abre o modal primeiro
+                tempEmail = email;
+                tempPass = password;
+                const myModal = new bootstrap.Modal(document.getElementById('modalPerfil'));
+                myModal.show();
+            }
+        }
+
+        // 3. Função final dentro do Modal
+        async function finalizarCadastro() {
+            const nome = document.getElementById('nomeUser').value;
+            const genero = document.getElementById('generoUser').value;
+            const tipoUso = document.getElementById('tipoUso').value;
+            const nomeP = document.getElementById('nomeParceiro').value;
+            const generoP = document.getElementById('generoParceiro').value;
+
+            if (!nome) return alert("Por favor, diga seu nome!");
+
+            const { data, error } = await s_client.auth.signUp({
+                email: tempEmail,
+                password: tempPass,
+                options: {
+                    data: {
+                        display_name: nome,
+                        genero: genero,
+                        tipo_uso: tipoUso,
+                        parceiro_nome: tipoUso === 'casal' ? nomeP : '',
+                        parceiro_genero: tipoUso === 'casal' ? generoP : ''
+                    }
                 }
-            } catch (err) {
-                alert(err.message);
-            } finally {
-                btn.disabled = false;
-                btn.innerText = modoLogin ? 'Entrar' : 'Criar Conta';
+            });
+
+            if (error) {
+                alert(error.message);
+            } else {
+                window.location.href = '../home/app.html';
+            }
+        }
+
+        function toggleInputs() {
+            const tipo = document.getElementById('tipoUso').value;
+            const camposCasal = document.getElementById('camposCasal');
+            const labelSeuNome = document.getElementById('labelSeuNome');
+
+            if (tipo === 'casal') {
+                camposCasal.style.display = 'block';
+                labelSeuNome.innerText = "1º Nome (Seu)";
+            } else {
+                camposCasal.style.display = 'none';
+                labelSeuNome.innerText = "Como quer ser chamado?";
             }
         }
     </script>
