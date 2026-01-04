@@ -24,6 +24,7 @@
 
 #tituloSaudacao {
     font-weight: 800;
+    
     background: linear-gradient(135deg, #fff 60%, var(--accent) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -92,11 +93,6 @@
     padding-right: 5px; /* Espaço para a barra de rolagem não colar */
 }
 
-/* Personalizando a barra de rolagem (Scrollbar) */
-.modal-body-scroll::-webkit-scrollbar { width: 6px; }
-.modal-body-scroll::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); border-radius: 10px; }
-.modal-body-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
-
 /* Tabela Aura */
 .table-aura {
     width: 100%;
@@ -133,10 +129,6 @@
     border: none;
     vertical-align: middle;
 }
-
-/* Arredondar cantos da primeira e última célula da linha */
-.table-aura td:first-child { border-top-left-radius: 12px; border-bottom-left-radius: 12px; }
-.table-aura td:last-child { border-top-right-radius: 12px; border-bottom-right-radius: 12px; }
 
 /* Badges de Categoria */
 .badge-cat {

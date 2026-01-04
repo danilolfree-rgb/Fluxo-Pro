@@ -30,59 +30,76 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="./pages/dashboard/style/footer.css">
 
 </head>
 
 <body>
+    <main>
+        <section class="hero-container">
+            <div class="canvas-container">
+                <canvas id="fundoAnimado"></canvas>
+                <div class="overlay-glow"></div>
+            </div>
+            <div class="brand-badge">AURA</div>
 
-    <section class="hero-container">
-        <div class="canvas-container">
-            <canvas id="fundoAnimado"></canvas>
-            <div class="overlay-glow"></div>
-        </div>
-        <div class="brand-badge">AURA</div>
+            <h1>Domine suas<br><span>finanças com Aura</span></h1>
 
-        <h1>Domine suas<br><span>finanças com Aura</span></h1>
+            <p class="subtitle">Uma plataforma minimalista projetada para quem busca clareza visual e precisão nos dados
+                financeiros.</p>
 
-        <p class="subtitle">Uma plataforma minimalista projetada para quem busca clareza visual e precisão nos dados
-            financeiros.</p>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="icon-box">📊</div>
+                    <h5>Visão de Sobra Real</h5>
+                    <p>O Aura calcula automaticamente o quanto realmente resta do seu salário após subtrair despesas
+                        fixas e
+                        variáveis.</p>
+                </div>
 
-        <div class="features-grid">
-            <div class="feature-card">
-                <div class="icon-box">📊</div>
-                <h5>Visão de Sobra Real</h5>
-                <p>O Aura calcula automaticamente o quanto realmente resta do seu salário após subtrair despesas fixas e
-                    variáveis.</p>
+                <div class="feature-card">
+                    <div class="icon-box">☁️</div>
+                    <h5>Nuvem em Tempo Real</h5>
+                    <p>Seus dados são salvos instantaneamente. Acesse de qualquer dispositivo e nunca perca um registro
+                        importante.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="icon-box">🏦</div>
+                    <h5>Gestão de Reservas</h5>
+                    <p>Separe seu dinheiro para objetivos específicos. Monitore o crescimento do seu patrimônio mês a
+                        mês.
+                    </p>
+                </div>
             </div>
 
-            <div class="feature-card">
-                <div class="icon-box">☁️</div>
-                <h5>Nuvem em Tempo Real</h5>
-                <p>Seus dados são salvos instantaneamente. Acesse de qualquer dispositivo e nunca perca um registro
-                    importante.</p>
+            <a href="pages/login/login.html" class="btn-main">
+                Adquirir controle financeiro
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M5 12h14m-7-7 7 7-7 7" />
+                </svg>
+            </a>
+
+            <div class="status-db">
+                <span class="dot"></span>
+                Banco de dados conectado e seguro
             </div>
-
-            <div class="feature-card">
-                <div class="icon-box">🏦</div>
-                <h5>Gestão de Reservas</h5>
-                <p>Separe seu dinheiro para objetivos específicos. Monitore o crescimento do seu patrimônio mês a mês.
-                </p>
-            </div>
+        </section>
+    </main>
+    <footer class="aura-footer">
+        <div class="footer-content">
+            <span class="footer-brand">AURA</span>
+            <nav>
+                <ul class="footer-links">
+                    <li><a href="#">Privacidade</a></li>
+                    <li><a href="#">Ajuda</a></li>
+                    <li><a href="#">Feedback</a></li>
+                </ul>
+            </nav>
+            <p>&copy; 2026 Aura - Controle Financeiro ✨</p>
         </div>
-
-        <a href="pages/login/login.html" class="btn-main">
-            Abrir meu Dashboard
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
-                stroke-linecap="round" stroke-linejoin="round">
-                <path d="M5 12h14m-7-7 7 7-7 7" />
-            </svg>
-        </a>
-
-        <div class="status-db">
-            <span class="dot"></span>
-            Banco de dados conectado e seguro
-        </div>
-    </section>
+    </footer>
 
 </body>
 <script>

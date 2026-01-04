@@ -4,10 +4,11 @@
 }
 
 body {
-    height: 100vh;
+    height: auto;
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-direction: column;
     background: radial-gradient(circle at center, #0f172a 0%, #020617 100%);
     overflow: hidden;
 }

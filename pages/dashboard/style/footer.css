@@ -1,0 +1,66 @@
+/* FOOTER SEMÂNTICO AURA */
+.aura-footer {
+    width: 100%;
+    padding: 2rem 1rem;
+    margin-top: 50px;
+    /* Empurra o footer para o fim da página se houver pouco conteúdo */
+    background: rgba(15, 23, 42, 0.8);
+    /* Cor dark do Slate-900 com transparência */
+    backdrop-filter: blur(10px);
+    /* Efeito de vidro */
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    text-align: center;
+    z-index: 10;
+}
+
+.footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.aura-footer p {
+    color: #94a3b8;
+    /* Slate-400 */
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+}
+
+.footer-brand {
+    font-weight: 700;
+    background: linear-gradient(90deg, #6366f1, #a855f7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-size: 1rem;
+}
+
+.footer-links {
+    display: flex;
+    gap: 1.5rem;
+    list-style: none;
+    padding: 0;
+}
+
+.footer-links a {
+    color: #64748b;
+    text-decoration: none;
+    font-size: 0.8rem;
+    transition: color 0.3s ease;
+}
+
+.footer-links a:hover {
+    color: #818cf8;
+    /* Indigo-400 */
+}
+
+/* Ajuste para telas pequenas */
+@media (max-width: 480px) {
+    .aura-footer {
+        padding: 1.5rem 1rem;
+        margin-bottom: 70px;
+        /* Espaço extra caso você use navegação mobile fixa embaixo */
+    }
+}

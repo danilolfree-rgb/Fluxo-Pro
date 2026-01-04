@@ -9,6 +9,11 @@
     --accent: #818cf8;
     --success: #4ade80;
     --danger: #fb7185;
+    --color-renda: #4ade80;
+    --color-renda-hover: #3fbb6d;
+    --color-reserva: #38bdf8;
+    --color-reserva-hover: rgba(13, 202, 240, 0.4);
+    --output-color: #fb7185;
 }
 
 body {
