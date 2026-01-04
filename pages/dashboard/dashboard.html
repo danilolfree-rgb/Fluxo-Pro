@@ -257,7 +257,7 @@
         }
 
         /* Botão de Rádio Estilo Segmentado */
-        .radio-grid-aura {
+        .modal-dashboard-radio {
             display: grid;
             grid-template-columns: 1fr 1fr;
             background: rgba(255, 255, 255, 0.05);
@@ -266,11 +266,11 @@
             gap: 4px;
         }
 
-        .radio-grid-aura input {
+        .modal-dashboard-radio input {
             display: none;
         }
 
-        .radio-grid-aura label {
+        .modal-dashboard-radio label {
             padding: 10px;
             text-align: center;
             border-radius: 8px;
@@ -280,7 +280,7 @@
             transition: 0.2s;
         }
 
-        .radio-grid-aura input:checked+label {
+        .modal-dashboard-radio input:checked+label {
             background: #6366f1;
             font-weight: bold;
         }
@@ -416,7 +416,7 @@
 
                     <div id="divQuemGastou" class="grid-item full-width" style="display: none;">
                         <label class="label-puro">Quem gastou?</label>
-                        <div class="radio-grid-aura">
+                        <div class="modal-dashboard-radio">
                             <input type="radio" name="quemGastou" id="radioUser" value="user" checked>
                             <label for="radioUser" id="labelUser">Eu</label>
 
