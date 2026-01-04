@@ -131,38 +131,43 @@ async function atualizarDashboard() {
                 clone.querySelector('.badge-cat-pura').innerText = `${icones[g.categoria] || '💸'} ${g.categoria}`;
 
                 const badgeUser = clone.querySelector('.badge-user-pura');
-                if (g.responsavel && badgeUser) {
+
+                // SÓ MOSTRA O BADGE SE FOR CONTA CASAL E TIVER RESPONSÁVEL
+                if (meta.tipo_uso === 'casal' && g.responsavel && badgeUser) {
                     // 1. Abreviar para 3 letras maiúsculas
                     const nomeAbreviado = g.responsavel.substring(0, 3).toUpperCase();
                     badgeUser.innerText = nomeAbreviado;
 
                     // 2. Lógica de Cores por Gênero
-                    // Verificamos se o responsável é o usuário atual ou o parceiro para definir a cor
                     const meuNome = meta.display_name;
-                    const meuGenero = meta.genero; // 'm' ou 'f'
+                    const meuGenero = meta.genero;
 
-                    let corBadge = "rgba(100, 116, 139, 0.2)"; // Cor padrão (cinza)
+                    let corBadge = "rgba(100, 116, 139, 0.2)";
                     let textoBadge = "#94a3b8";
 
-                    // Se o gasto for meu, uso meu gênero. Se for do parceiro, inverto o gênero.
                     let generoResponsavel = meuGenero;
                     if (g.responsavel !== meuNome) {
                         generoResponsavel = (meuGenero === 'm') ? 'f' : 'm';
                     }
 
                     if (generoResponsavel === 'm') {
-                        corBadge = "rgba(0, 123, 255, 0.2)"; // Azul sutil
+                        corBadge = "rgba(0, 123, 255, 0.2)";
                         textoBadge = "#0d6efd";
                     } else if (generoResponsavel === 'f') {
-                        corBadge = "rgba(255, 20, 147, 0.2)"; // Rosa sutil
+                        corBadge = "rgba(255, 20, 147, 0.2)";
                         textoBadge = "#ff1493";
                     }
 
                     badgeUser.style.backgroundColor = corBadge;
                     badgeUser.style.color = textoBadge;
-                    badgeUser.style.border = `1px solid ${textoBadge}44`; // Borda suave com 44 de opacidade
+                    badgeUser.style.border = `1px solid ${textoBadge}44`;
                 } else if (badgeUser) {
+                    // SE FOR CONTA SOLO, O BADGE É REMOVIDO PARA LIMPAR O VISUAL
                     badgeUser.remove();
+                }
+                const btnExcluir = clone.querySelector('.btn-delete-small');
+                if (btnExcluir) {
+                    btnExcluir.onclick = () => excluirAcao(g.id, 'item');
                 }
                 tabelaBody.appendChild(clone);
             });
@@ -235,12 +240,28 @@ async function enviar(tipo) {
 
 window.excluirAcao = async (idOuNome, acao) => {
     if (!confirm("Confirmar exclusão?")) return;
-    let query = s_client.from('Lançamentos').delete();
-    if (acao === 'item') query = query.eq('id', idOuNome);
-    else query = query.eq('tipo', 'reserva').eq('descricao', idOuNome);
 
-    const { error } = await query;
-    if (!error) atualizarDashboard();
+    try {
+        let query = s_client.from('Lançamentos').delete();
+
+        if (acao === 'item') {
+            // Exclui pelo ID único do banco
+            query = query.eq('id', idOuNome);
+        } else {
+            // Exclui reservas pelo nome (descricao)
+            query = query.eq('tipo', 'reserva').eq('descricao', idOuNome);
+        }
+
+        const { error } = await query;
+
+        if (error) throw error;
+
+        // Atualiza a tela imediatamente após excluir
+        await atualizarDashboard();
+
+    } catch (err) {
+        alert("Erro ao excluir: " + err.message);
+    }
 };
 
 // Exportações

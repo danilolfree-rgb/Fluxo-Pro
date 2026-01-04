@@ -4,20 +4,24 @@
 }
 
 body {
-    height: auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
     background: radial-gradient(circle at center, #0f172a 0%, #020617 100%);
     overflow: hidden;
 }
 
+body main {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 /* Efeito de Vidro no Card */
 .login-card {
+    max-width: 500px;
     width: 100%;
-    max-width: 420px;
     padding: 50px 40px;
+    margin: 20px;
     background: rgba(15, 23, 42, 0.6);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
