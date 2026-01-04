@@ -80,9 +80,11 @@
 .color-btn-renda {
     background: var(--color-renda);
 }
+
 .color-btn-reserva {
     background: var(--color-reserva);
 }
+
 .color-btn-gasto {
     background: var(--output-color);
 }
@@ -91,6 +93,35 @@
     display: flex;
     flex-direction: row;
     gap: 15px;
+}
+
+/* Botão de Rádio Estilo Segmentado */
+.modal-dashboard-radio {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 4px;
+    gap: 4px;
+}
+
+.modal-dashboard-radio input {
+    display: none;
+}
+
+.modal-dashboard-radio label {
+    padding: 10px;
+    text-align: center;
+    border-radius: 8px;
+    cursor: pointer;
+    color: white;
+    font-size: 0.85rem;
+    transition: 0.2s;
+}
+
+.modal-dashboard-radio input:checked+label {
+    background: #6366f1;
+    font-weight: bold;
 }
 
 .custom-modal.active {
