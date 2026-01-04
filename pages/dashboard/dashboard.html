@@ -222,40 +222,6 @@
             /* Ocupa as duas colunas */
         }
 
-        /* Labels e Inputs Customizados */
-        .field-label {
-            font-size: 0.75rem;
-            color: rgba(255, 255, 255, 0.5);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            display: block;
-            width: 100%;
-        }
-
-        .input-aura {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            padding: 12px;
-            color: white;
-            font-size: 0.9rem;
-            outline: none;
-            transition: 0.3s;
-        }
-
-        .input-aura:focus {
-            border-color: #6366f1;
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .valor-input {
-            font-size: 1.8rem !important;
-            font-weight: bold;
-            color: #fb7185 !important;
-            /* Rosa para gastos */
-            text-align: center;
-        }
-        
     </style>
 </head>
 
@@ -359,7 +325,7 @@
                     </div>
 
                     <div class="field-options">
-                        <div>
+                        <div class="modal-dashboard-input-option">
                             <label class="label-puro">Categoria</label>
                             <select id="catGasto" class="form-control-puro">
                                 <option value="Alimentação">🍔 Alimentação</option>
@@ -386,7 +352,7 @@
                         </div>
                     </div>
 
-                    <div id="divQuemGastou" class="grid-item full-width" style="display: none;">
+                    <div id="divQuemGastou" style="display: none;">
                         <label class="label-puro">Quem gastou?</label>
                         <div class="modal-dashboard-radio">
                             <input type="radio" name="quemGastou" id="radioUser" value="user" checked>
