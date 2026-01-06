@@ -56,7 +56,7 @@ function configurarMeses() {
     select.onchange = atualizarDashboard;
 }
 
-// --- LÓGICA DE DADOS ---
+// --- LÓGICA DE DADOS PRINCIPAL ---
 async function atualizarDashboard() {
     try {
         const mes = document.getElementById('mesGlobal').value;
@@ -78,7 +78,7 @@ async function atualizarDashboard() {
         let gnh = 0, gst = 0, reservas = {};
         const icones = { 'Alimentação': '🍔', 'Casa': '🏠', 'Lazer': '🎉', 'Transporte': '🚗', 'Roupas': '👕', 'Viagem': '✈️', 'Fatura': '🧾', 'Material de trabalho': '💼', 'Igreja': '⛪', 'Drogaria': '💊' };
 
-        // 1. Processamento de valores
+        // 1. Processamento de valores gerais (Renda e Reservas)
         todosDados.forEach(i => {
             const v = parseFloat(i.valor) || 0;
             if (i.tipo === 'reserva') reservas[i.descricao] = (reservas[i.descricao] || 0) + v;
@@ -88,14 +88,23 @@ async function atualizarDashboard() {
             }
         });
 
-        // 2. Atualiza UI Principal
+        // 2. Filtrar lista de gastos do mês atual
+        const listaGastos = todosDados
+            .filter(i => i.tipo === 'gasto' && i.mes === mes)
+            .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+        // 3. Executar Análise Inteligente (Abas/Insights)
+        calcularAnalises(listaGastos, meta);
+
+        // 4. Atualizar Resumo Financeiro
         document.getElementById('saldoTotal').innerText = formatarMoeda(gnh - gst);
         document.getElementById('resumoGanhos').innerText = formatarMoeda(gnh);
         document.getElementById('resumoGastos').innerText = formatarMoeda(gst);
+        
         const subtitulo = document.getElementById('subtituloAura');
         if (subtitulo) subtitulo.innerText = "Resumo atualizado com sucesso ✨";
 
-        // 3. Renderiza Reservas
+        // 5. Renderizar Reservas
         const containerReservas = document.getElementById('listaReservas');
         const tempReserva = document.getElementById('temp-reserva');
         if (containerReservas && tempReserva) {
@@ -109,18 +118,13 @@ async function atualizarDashboard() {
             });
         }
 
-        // 4. Renderiza Histórico (Moderno/Mobile)
+        // 6. Renderizar Histórico (Com lógica de Badge Solo/Casal)
         const tabelaBody = document.getElementById('tabelaGastosBody');
         const tempLinha = document.getElementById('temp-linha-gasto');
         if (tabelaBody && tempLinha) {
             tabelaBody.innerHTML = "";
-            const listaGastos = todosDados
-                .filter(i => i.tipo === 'gasto' && i.mes === mes)
-                .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-
             listaGastos.forEach(g => {
                 const clone = tempLinha.content.cloneNode(true);
-                // Usamos a classe do novo template (extrato-dia em vez de td-dia)
                 const dia = new Date(g.created_at).getDate().toString().padStart(2, '0');
 
                 const elDia = clone.querySelector('.extrato-dia') || clone.querySelector('.td-dia');
@@ -131,44 +135,26 @@ async function atualizarDashboard() {
                 clone.querySelector('.badge-cat-pura').innerText = `${icones[g.categoria] || '💸'} ${g.categoria}`;
 
                 const badgeUser = clone.querySelector('.badge-user-pura');
-
-                // SÓ MOSTRA O BADGE SE FOR CONTA CASAL E TIVER RESPONSÁVEL
+                // Só mostra badge se for casal
                 if (meta.tipo_uso === 'casal' && g.responsavel && badgeUser) {
-                    // 1. Abreviar para 3 letras maiúsculas
                     const nomeAbreviado = g.responsavel.substring(0, 3).toUpperCase();
                     badgeUser.innerText = nomeAbreviado;
-
-                    // 2. Lógica de Cores por Gênero
+                    
                     const meuNome = meta.display_name;
                     const meuGenero = meta.genero;
+                    let generoResponsavel = (g.responsavel === meuNome) ? meuGenero : (meuGenero === 'm' ? 'f' : 'm');
 
-                    let corBadge = "rgba(100, 116, 139, 0.2)";
-                    let textoBadge = "#94a3b8";
-
-                    let generoResponsavel = meuGenero;
-                    if (g.responsavel !== meuNome) {
-                        generoResponsavel = (meuGenero === 'm') ? 'f' : 'm';
-                    }
-
-                    if (generoResponsavel === 'm') {
-                        corBadge = "rgba(0, 123, 255, 0.2)";
-                        textoBadge = "#0d6efd";
-                    } else if (generoResponsavel === 'f') {
-                        corBadge = "rgba(255, 20, 147, 0.2)";
-                        textoBadge = "#ff1493";
-                    }
-
-                    badgeUser.style.backgroundColor = corBadge;
-                    badgeUser.style.color = textoBadge;
-                    badgeUser.style.border = `1px solid ${textoBadge}44`;
+                    const cores = generoResponsavel === 'm' ? ["rgba(0, 123, 255, 0.2)", "#0d6efd"] : ["rgba(255, 20, 147, 0.2)", "#ff1493"];
+                    badgeUser.style.backgroundColor = cores[0];
+                    badgeUser.style.color = cores[1];
+                    badgeUser.style.border = `1px solid ${cores[1]}44`;
                 } else if (badgeUser) {
-                    // SE FOR CONTA SOLO, O BADGE É REMOVIDO PARA LIMPAR O VISUAL
                     badgeUser.remove();
                 }
-                const btnExcluir = clone.querySelector('.btn-delete-small');
-                if (btnExcluir) {
-                    btnExcluir.onclick = () => excluirAcao(g.id, 'item');
-                }
+
+                const btnExcluir = clone.querySelector('.btn-delete-small') || clone.querySelector('.btn-excluir-item');
+                if (btnExcluir) btnExcluir.onclick = () => excluirAcao(g.id, 'item');
+
                 tabelaBody.appendChild(clone);
             });
         }
@@ -178,12 +164,91 @@ async function atualizarDashboard() {
     }
 }
 
-// --- MODAIS E ENVIO (Igual ao seu) ---
-window.abrirModal = (id) => document.getElementById(id).style.display = 'flex';
-window.fecharModal = (id) => document.getElementById(id).style.display = 'none';
+// --- SISTEMA DE ANÁLISE (INSIGHTS) ---
+let analiseDados = {
+    categoria: { nome: "Nenhuma", valor: 0 },
+    pagamento: { nome: "Nenhum", valor: 0 },
+    quem: { nome: "Ninguém", valor: 0 }
+};
 
+function calcularAnalises(listaGastos, meta) {
+    const section = document.querySelector('.insights-section');
+    if (!listaGastos || listaGastos.length === 0) {
+        if (section) section.style.display = 'none';
+        return;
+    }
+    if (section) section.style.display = 'block';
+
+    const totais = { cat: {}, pag: {}, user: {} };
+
+    listaGastos.forEach(g => {
+        const v = parseFloat(g.valor) || 0;
+        if (g.categoria) totais.cat[g.categoria] = (totais.cat[g.categoria] || 0) + v;
+        if (g.pagamento) totais.pag[g.pagamento] = (totais.pag[g.pagamento] || 0) + v;
+        if (g.responsavel) totais.user[g.responsavel] = (totais.user[g.responsavel] || 0) + v;
+    });
+
+    const pegarMaior = (obj) => {
+        const entries = Object.entries(obj);
+        return entries.length > 0 ? entries.sort((a, b) => b[1] - a[1])[0] : ["---", 0];
+    };
+
+    const maiorCat = pegarMaior(totais.cat);
+    const maiorPag = pegarMaior(totais.pag);
+    const maiorUser = pegarMaior(totais.user);
+
+    analiseDados.categoria = { nome: maiorCat[0], valor: maiorCat[1] };
+    analiseDados.pagamento = { nome: maiorPag[0], valor: maiorPag[1] };
+    analiseDados.quem = { nome: maiorUser[0], valor: maiorUser[1] };
+
+    // Controle do botão Responsável (Solo vs Casal)
+    const btnQuem = document.getElementById('btn-insight-quem');
+    if (btnQuem) btnQuem.style.display = (meta.tipo_uso === 'casal') ? 'block' : 'none';
+
+    mostrarInsight('categoria');
+}
+
+window.mostrarInsight = (tipo, event) => {
+    // 1. Remove a classe 'active' de TODOS os botões de aba
+    const botoes = document.querySelectorAll('.tab-btn');
+    botoes.forEach(btn => btn.classList.remove('active'));
+
+    // 2. Lógica para aplicar a classe 'active' no botão correto
+    if (event && event.currentTarget) {
+        // Se veio de um clique direto
+        event.currentTarget.classList.add('active');
+    } else {
+        // Se foi chamado automaticamente (ex: ao carregar a página)
+        // Procura o botão que tem o onclick relacionado ao tipo
+        const btnAutomatico = Array.from(botoes).find(btn => 
+            btn.getAttribute('onclick')?.includes(`'${tipo}'`)
+        );
+        if (btnAutomatico) btnAutomatico.classList.add('active');
+    }
+
+    // 3. Atualiza os textos do card
+    const dado = analiseDados[tipo] || { nome: "---", valor: 0 };
+    const labels = {
+        categoria: "Maior gasto por categoria",
+        pagamento: "Forma de pagamento mais usada",
+        quem: "Quem mais gastou no mês"
+    };
+
+    const elLabel = document.getElementById('insight-label');
+    const elValue = document.getElementById('insight-value');
+    const elDetail = document.getElementById('insight-detail');
+
+    if (elLabel) elLabel.innerText = labels[tipo];
+    if (elValue) elValue.innerText = dado.nome;
+    if (elDetail) elDetail.innerText = `Total: ${formatarMoeda(dado.valor)}`;
+};
+
+// --- ENVIO E EXCLUSÃO ---
 async function enviar(tipo) {
-    const btn = document.getElementById(`btnSalvar${tipo.charAt(0).toUpperCase() + tipo.slice(1)}`);
+    const btnId = `btnSalvar${tipo.charAt(0).toUpperCase() + tipo.slice(1)}`;
+    const btn = document.getElementById(btnId);
+    if (!btn || btn.disabled) return;
+
     try {
         const { data: { session } } = await s_client.auth.getSession();
         const meta = session.user.user_metadata;
@@ -217,20 +282,19 @@ async function enviar(tipo) {
         };
 
         Object.assign(payload, config[tipo]());
-        if (!payload.valor) return alert("Insira um valor");
+        if (!payload.valor) return alert("Insira um valor válido");
 
         btn.disabled = true;
         const { error } = await s_client.from('Lançamentos').insert([payload]);
         if (error) throw error;
 
         fecharModal(`modal${tipo.charAt(0).toUpperCase() + tipo.slice(1)}`);
-        atualizarDashboard();
+        await atualizarDashboard();
 
         if (tipo === 'gasto') {
             document.getElementById('valGasto').value = "";
             document.getElementById('descGasto').value = "";
         }
-
     } catch (err) {
         alert("Erro ao salvar: " + err.message);
     } finally {
@@ -240,29 +304,34 @@ async function enviar(tipo) {
 
 window.excluirAcao = async (idOuNome, acao) => {
     if (!confirm("Confirmar exclusão?")) return;
-
     try {
         let query = s_client.from('Lançamentos').delete();
-
-        if (acao === 'item') {
-            // Exclui pelo ID único do banco
-            query = query.eq('id', idOuNome);
-        } else {
-            // Exclui reservas pelo nome (descricao)
-            query = query.eq('tipo', 'reserva').eq('descricao', idOuNome);
-        }
+        if (acao === 'item') query = query.eq('id', idOuNome);
+        else query = query.eq('tipo', 'reserva').eq('descricao', idOuNome);
 
         const { error } = await query;
-
         if (error) throw error;
-
-        // Atualiza a tela imediatamente após excluir
         await atualizarDashboard();
-
     } catch (err) {
         alert("Erro ao excluir: " + err.message);
     }
 };
+
+window.toggleFab = () => {
+    const options = document.getElementById('fabOptions');
+    const btn = document.querySelector('.fab-main');
+    
+    if (options.style.display === 'flex') {
+        options.style.display = 'none';
+        btn.classList.remove('active');
+    } else {
+        options.style.display = 'flex';
+        btn.classList.add('active');
+    }
+};
+
+window.abrirModal = (id) => document.getElementById(id).style.display = 'flex';
+window.fecharModal = (id) => document.getElementById(id).style.display = 'none';
 
 // Exportações
 window.enviar = enviar;

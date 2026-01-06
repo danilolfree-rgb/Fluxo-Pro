@@ -18,46 +18,6 @@
     <style>
         /* CSS Específico para a Tabela de Histórico Moderna */
 
-        .badge-cat {
-            padding: 5px 10px;
-            border-radius: 8px;
-            font-size: 0.7rem;
-            font-weight: 700;
-            background: rgba(129, 140, 248, 0.15);
-            color: #818cf8;
-            border: 1px solid rgba(129, 140, 248, 0.2);
-        }
-
-        .badge-user {
-            font-size: 0.65rem;
-            color: #cbd5e1;
-            background: rgba(255, 255, 255, 0.1);
-            padding: 2px 6px;
-            border-radius: 4px;
-            margin-left: 5px;
-        }
-
-        .title-reserva {
-            color: #0dcaf0;
-            /* Cor Info */
-            font-weight: bold;
-            margin: 0;
-            letter-spacing: 1px;
-        }
-
-        .btn-close-puro {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 1.5rem;
-            cursor: pointer;
-            opacity: 0.7;
-        }
-
-        .btn-close-puro:hover {
-            opacity: 1;
-        }
-
         .label-puro {
             font-size: 0.7rem;
             color: #64748b;
@@ -66,7 +26,7 @@
             margin-left: 5px;
         }
 
-        .form-control-puro {
+        .modal-dashboard-input {
             width: 100%;
             background: rgba(2, 6, 23, 0.5);
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -77,7 +37,7 @@
             margin-top: 5px;
         }
 
-        .form-control-puro:focus {
+        .modal-dashboard-input:focus {
             border-color: #0dcaf0;
         }
 
@@ -164,64 +124,65 @@
             margin-left: 6px;
         }
 
-        .btn-excluir-item {
-            background: none;
-            border: none;
-            cursor: pointer;
-            filter: grayscale(1);
-            opacity: 0.5;
-            transition: 0.2s;
+        .insights-section {
+            margin-top: 20px;
         }
 
-        .btn-excluir-item:hover {
-            filter: grayscale(0);
-            opacity: 1;
-        }
-
-        /* Estilo para o botão X de fechar */
-        .btn-close-modal {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 28px;
-            cursor: pointer;
-            line-height: 1;
-            transition: 0.2s;
-        }
-
-        .btn-close-modal:hover {
-            color: #ff4d4d;
-            transform: scale(1.1);
-        }
-
-        /* Garante que o rádio check de "Quem gastou" apareça bem */
-        .btn-check:checked+.btn-outline-light {
-            background-color: #6366f1 !important;
-            /* Cor principal da Aura */
-            border-color: #6366f1 !important;
-        }
-
-        /* Container do Grid */
-        .aura-grid-form {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            /* Duas colunas iguais */
-            gap: 15px;
-            /* Espaçamento entre os campos */
-            padding: 10px 0;
-        }
-
-        .grid-item {
+        .insight-tabs {
             display: flex;
-            flex-direction: column;
-            gap: 5px;
+            gap: 10px;
+            margin-bottom: 12px;
+            overflow-x: auto;
+            padding-bottom: 5px;
         }
 
-        .full-width {
-            grid-column: span 2;
-            /* Ocupa as duas colunas */
+        .tab-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #94a3b8;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.3s ease;
         }
 
+        .tab-btn.active {
+            background: #6366f1;
+            color: white;
+            border-color: #6366f1;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        .insight-card-aura {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.7), rgba(15, 23, 42, 0.8));
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
+        }
+
+        #insight-label {
+            display: block;
+            color: #94a3b8;
+            font-size: 0.8rem;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        #insight-value {
+            margin: 0;
+            font-size: 1.4rem;
+            color: #f8fafc;
+            font-weight: 700;
+        }
+
+        #insight-detail {
+            color: #6366f1;
+            font-weight: 600;
+        }
     </style>
 </head>
 
@@ -276,25 +237,43 @@
                 </div>
             </div>
 
-            <div class="action-grid-mini">
-                <button class="btn-mini" onclick="abrirModal('modalGasto')"><i>📉</i> Gasto</button>
-                <button class="btn-mini" onclick="abrirModal('modalRenda')"><i>💰</i> Renda</button>
-                <button class="btn-mini" onclick="abrirModal('modalReserva')"><i>🏦</i> Reserva</button>
-            </div>
-
-            <button class="btn btn-outline-light btn-sm mt-2 w-100" onclick="abrirModal('modalHistorico')"
-                style="border-radius: 12px; border-color: rgba(255,255,255,0.1);">
-                Ver Extrato Detalhado
-            </button>
-
-            <div class="container mt-4 px-0">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h5 style="font-weight: 700; color: white; margin-bottom: 0;">Minhas Reservas</h5>
-                    <span class="badge rounded-pill bg-primary" id="countReservas">0</span>
-                </div>
-                <div id="listaReservas">
+            <div class="fab-container">
+                <button class="fab-main" onclick="toggleFab()">
+                    <span>+</span>
+                </button>
+                <div class="fab-options" id="fabOptions">
+                    <button onclick="abrirModal('modalGasto'); toggleFab()">💸 Gasto</button>
+                    <button onclick="abrirModal('modalRenda'); toggleFab()">💰 Renda</button>
+                    <button onclick="abrirModal('modalReserva'); toggleFab()">🏦 Reserva</button>
                 </div>
             </div>
+            <div class="dashboard-buttons-details-field">
+                <button class="dashboard-button-detail" onclick="abrirModal('modalHistorico')">
+                    Extrato
+                </button>
+
+                <button class="dashboard-button-detail" onclick="abrirModal('modalListaReserva')">
+                    Reservas
+                </button>
+            </div>
+            <section class="insights-section">
+                <div class="insight-tabs">
+                    <button id="tab-btn" class="tab-btn" onclick="mostrarInsight('categoria')">🏷️ Categoria</button>
+                    <button id="tab-second-btn" class="tab-btn" onclick="mostrarInsight('pagamento')">💳
+                        Pagamento</button>
+                    <button id="btn-insight-quem" class="tab-btn" onclick="mostrarInsight('quem', event)">👥
+                        Responsável</button>
+                </div>
+
+                <div id="insight-display" class="insight-card-aura">
+                    <div class="insight-content">
+                        <span id="insight-label">Carregando análise...</span>
+                        <h3 id="insight-value">---</h3>
+                        <small id="insight-detail">---</small>
+                    </div>
+                </div>
+            </section>
+
         </div>
 
         <div id="modalGasto" class="modal-dashboard">
@@ -311,23 +290,23 @@
 
                     <div>
                         <label class="label-puro">Valor</label>
-                        <input type="number" id="valGasto" class="form-control-puro" placeholder="R$ 0,00">
+                        <input type="number" id="valGasto" class="modal-dashboard-input" placeholder="R$ 0,00">
                     </div>
 
                     <div>
                         <label class="label-puro">Descrição</label>
-                        <input type="text" id="descGasto" class="form-control-puro" placeholder="Ex: Mercado">
+                        <input type="text" id="descGasto" class="modal-dashboard-input" placeholder="Ex: Mercado">
                     </div>
 
                     <div>
                         <label class="label-puro">Data</label>
-                        <input type="date" id="dataGasto" class="form-control-puro">
+                        <input type="date" id="dataGasto" class="modal-dashboard-input">
                     </div>
 
                     <div class="field-options">
                         <div class="modal-dashboard-input-option">
                             <label class="label-puro">Categoria</label>
-                            <select id="catGasto" class="form-control-puro">
+                            <select id="catGasto" class="modal-dashboard-input">
                                 <option value="Alimentação">🍔 Alimentação</option>
                                 <option value="Casa">🏠 Moradia</option>
                                 <option value="Lazer">🎉 Lazer</option>
@@ -343,7 +322,7 @@
 
                         <div class="modal-dashboard-input-option">
                             <label class="label-puro">Pagamento</label>
-                            <select id="pagGasto" class="form-control-puro">
+                            <select id="pagGasto" class="modal-dashboard-input">
                                 <option value="Pix">💠 Pix</option>
                                 <option value="Crédito">💳 Crédito</option>
                                 <option value="Débito">💳 Débito</option>
@@ -384,7 +363,7 @@
                 <form onsubmit="event.preventDefault(); enviar('renda');" class="modal-dashboard-inputs-field">
                     <div class="modal-dashboard-input-option">
                         <label class="label-puro">Origem</label>
-                        <select id="catRenda" class="form-control-puro">
+                        <select id="catRenda" class="modal-dashboard-input">
                             <option value="Salário">💰 Salário</option>
                             <option value="Extra">🌟 Renda Extra</option>
                             <option value="Investimento">📈 Rendimento</option>
@@ -393,12 +372,11 @@
 
                     <div>
                         <label class="label-puro">Valor</label>
-                        <input type="number" id="valRenda" class="form-control-puro" placeholder="0,00">
+                        <input type="number" id="valRenda" class="modal-dashboard-input" placeholder="0,00">
                     </div>
 
                     <div>
-                        <button type="submit" id="btnSalvarRenda"
-                            class="modal-dashboard-btn-save color-btn-renda">
+                        <button type="submit" id="btnSalvarRenda" class="modal-dashboard-btn-save color-btn-renda">
                             CONFIRMAR ENTRADA
                         </button>
                     </div>
@@ -420,13 +398,13 @@
                 <form onsubmit="event.preventDefault(); enviar('reserva');" class="modal-dashboard-inputs-field">
                     <div>
                         <label class="label-puro">Objetivo</label>
-                        <input type="text" id="descReserva" class="form-control-puro"
+                        <input type="text" id="descReserva" class="modal-dashboard-input"
                             placeholder="Ex: Viagem, Carro...">
                     </div>
 
                     <div>
                         <label class="label-puro">Valor R$</label>
-                        <input type="number" id="valReserva" class="form-control-puro" placeholder="0,00">
+                        <input type="number" id="valReserva" class="modal-dashboard-input" placeholder="0,00">
                     </div>
                     <button type="submit" id="btnSalvarReserva"
                         class="modal-dashboard-btn-save color-btn-reserva">GUARDAR</button>
@@ -434,7 +412,7 @@
             </section>
         </div>
 
-        <div id="modalHistorico" class="aura-modal-overlay">
+        <div id="modalHistorico" class="modal-dashboard">
             <div class="modal-dashboard-card historico-expandido">
                 <div class="modal-dashboard-header">
                     <div class="modal-dashboard-body-header">
@@ -446,6 +424,21 @@
 
                 <div class="scroll-extract">
                     <div id="tabelaGastosBody" class="lista-extrato-moderna">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="modalListaReserva" class="modal-dashboard">
+            <div class="modal-dashboard-card">
+                <div class="modal-dashboard-header">
+                    <div class="modal-dashboard-body-header">
+                        <h2 class="title-modals color-reserva">Minhas Reservas</h2>
+                        <button onclick="fecharModal('modalListaReserva')" class="modal-dashboard-btn-close">X</button>
+                    </div>
+                    <div class="modal-dashboard-inputs-field">
+                        <div style="margin-top: 10px;" id="listaReservas">
+                        </div>
                     </div>
                 </div>
             </div>

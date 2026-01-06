@@ -28,3 +28,81 @@
     margin-bottom: 4px;
     font-style: normal;
 }
+
+.dashboard-buttons-details-field {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+}
+
+.dashboard-button-detail {
+    width: 100px;
+    height: 40px;
+    border: none;
+    border-radius: 20px;
+    background: var(--glass-border);
+    color: white;
+}
+
+.fab-container {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: center;
+    gap: 15px;
+    z-index: 999;
+}
+
+.fab-main {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: var(--aura-effect);
+    color: white;
+    border: none;
+    display: flex;
+    justify-content: center;
+    font-size: 35px;
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+    cursor: pointer;
+    transition: transform 0.3s;
+}
+
+.fab-main.active {
+    transform: rotate(45deg);
+    background: #474abb;
+}
+
+.fab-options {
+    display: none;
+    /* Escondido por padrão */
+    flex-direction: column;
+    gap: 10px;
+    animation: fadeIn 0.3s ease forwards;
+}
+
+.fab-options button {
+    background: #1e293b;
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 12px 20px;
+    border-radius: 30px;
+    white-space: nowrap;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
