@@ -1,0 +1,9 @@
+.icon-menu {
+    color: white;
+    transition: 0.3s;
+}
+
+.icon-menu:hover {
+    color: #00C896;
+    transform: translateY(-5px);
+}

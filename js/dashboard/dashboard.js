@@ -63,6 +63,8 @@ async function atualizarDashboard() {
         const { data: { session } } = await s_client.auth.getSession();
         const meta = session.user.user_metadata;
 
+        lucide.createIcons();
+
         let idsParaBuscar = [session.user.id];
         if (meta.tipo_uso === 'casal' && meta.parceiro_id) {
             idsParaBuscar.push(meta.parceiro_id);
