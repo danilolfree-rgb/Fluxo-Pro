@@ -183,6 +183,115 @@
             color: #6366f1;
             font-weight: 600;
         }
+
+        :root {
+            --nav-bg: rgba(15, 23, 42, 0.9);
+            --primary: #6366f1;
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 70px;
+            background: var(--nav-bg);
+            backdrop-filter: blur(15px);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: env(safe-area-inset-bottom);
+            /* Suporte para iPhone X+ */
+            z-index: 1000;
+        }
+
+        .nav-item {
+            background: none;
+            border: none;
+            color: #94a3b8;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 0.7rem;
+            gap: 4px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .nav-item.active {
+            color: var(--primary);
+        }
+
+        .nav-item .icon {
+            font-size: 1.2rem;
+        }
+
+        /* Ajuste do FAB no Centro */
+        .fab-wrapper {
+            position: relative;
+            top: -20px;
+            /* Faz o botão central subir um pouco */
+        }
+
+        .fab-main {
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            border: 4px solid #0f172a;
+            /* "Corta" a barra nav */
+            font-size: 24px;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+            cursor: pointer;
+        }
+
+        .fab-options {
+            position: absolute;
+            bottom: 70px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+            width: 140px;
+        }
+
+        .fab-options button {
+            background: #1e293b;
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+
+        .app-screen {
+            padding: 20px;
+            padding-bottom: 100px;
+            /* Espaço para não cobrir o conteúdo com o menu bottom */
+            animation: fadeIn 0.3s ease;
+        }
+
+        /* Animação suave de entrada */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Ocultar seções por padrão via classe se preferir */
+        .hidden {
+            display: none !important;
+        }
     </style>
 </head>
 
@@ -207,8 +316,9 @@
         </div>
     </nav>
     <main>
-        <div class="container px-4">
 
+        <!-- First screen - dashboard -->
+        <section id="screen-init" class="app-screen">
             <div class="header-section mb-4">
                 <h4 id="tituloSaudacao" style="font-weight: 800; color: white; margin-bottom: 4px;">Olá!</h4>
                 <p id="subtituloAura" style="color: #64748b; font-size: 14px; margin-bottom: 0;">Carregando seu
@@ -236,26 +346,6 @@
                     </div>
                 </div>
             </div>
-
-            <div class="fab-container">
-                <button class="fab-main" onclick="toggleFab()">
-                    <span>+</span>
-                </button>
-                <div class="fab-options" id="fabOptions">
-                    <button onclick="abrirModal('modalGasto'); toggleFab()">💸 Gasto</button>
-                    <button onclick="abrirModal('modalRenda'); toggleFab()">💰 Renda</button>
-                    <button onclick="abrirModal('modalReserva'); toggleFab()">🏦 Reserva</button>
-                </div>
-            </div>
-            <div class="dashboard-buttons-details-field">
-                <button class="dashboard-button-detail" onclick="abrirModal('modalHistorico')">
-                    Extrato
-                </button>
-
-                <button class="dashboard-button-detail" onclick="abrirModal('modalListaReserva')">
-                    Reservas
-                </button>
-            </div>
             <section class="insights-section">
                 <div class="insight-tabs">
                     <button id="tab-btn" class="tab-btn" onclick="mostrarInsight('categoria')">🏷️ Categoria</button>
@@ -273,8 +363,104 @@
                     </div>
                 </div>
             </section>
+        </section>
 
-        </div>
+        <!-- Second screen - extract -->
+        <section id="screen-extract" class="app-screen" style="display: none;">
+            <div class="modal-dashboard-header">
+                <div class="modal-dashboard-body-header">
+                    <h2 class="title-modals color-renda">Extrato Detalhado</h2>
+                </div>
+                <p>Movimentações do mês selecionado</p>
+            </div>
+
+            <div class="scroll-extract">
+                <div id="tabelaGastosBody" class="lista-extrato-moderna">
+                </div>
+            </div>
+            <template id="temp-linha-gasto">
+                <div class="extrato-item">
+                    <div class="extrato-lado-esquerdo">
+                        <span class="extrato-dia"></span>
+                        <div class="extrato-detalhes">
+                            <strong class="td-principal"></strong>
+                            <span class="td-sub"></span>
+                        </div>
+                    </div>
+
+                    <div class="extrato-lado-direito">
+                        <div class="extrato-valores">
+                            <span class="td-valor-gasto"></span>
+                            <div class="extrato-badges">
+                                <span class="badge-cat-pura"></span>
+                                <span class="badge-user-pura"></span>
+                            </div>
+                        </div>
+                        <button class="btn-delete-small">×</button>
+                    </div>
+                </div>
+            </template>
+        </section>
+
+        <!-- Third screen - reserve -->
+        <section id="screen-reserve" class="app-screen" style="display: none;">
+            <div class="modal-dashboard-body-header">
+                <h2 class="title-modals color-reserva">Minhas Reservas</h2>
+            </div>
+            <div class="modal-dashboard-inputs-field">
+                <div style="margin-top: 10px;" id="listaReservas">
+                </div>
+            </div>
+            <template id="temp-reserva">
+                <div class="reserva-item-pura">
+                    <div class="reserva-info">
+                        <span class="reserva-nome"></span>
+                        <span class="reserva-tag">Acumulado</span>
+                    </div>
+                    <div class="reserva-acoes">
+                        <span class="reserva-valor-num"></span>
+                        <button class="btn-delete-small">×</button>
+                    </div>
+                </div>
+            </template>
+        </section>
+
+        <section id="screen-perfil" class="app-screen" style="display: none;">
+            <h2>Esta pagina está sendo desenvolvida... :) </h2>
+        </section>
+
+
+        <!-- Menu of navigation -->
+        <nav class="bottom-nav">
+            <button class="nav-item active" onclick="navegar('init')">
+                <span class="icon">🏠</span>
+                <span class="label">Início</span>
+            </button>
+            <button class="nav-item" onclick="navegar('extract')">
+                <span class="icon">📊</span>
+                <span class="label">Extrato</span>
+            </button>
+
+            <div class="fab-wrapper">
+                <button class="fab-main" onclick="toggleFab()">
+                    <span>+</span>
+                </button>
+                <div class="fab-options" id="fabOptions">
+                    <button onclick="abrirModal('modalGasto'); toggleFab()">💸 Gasto</button>
+                    <button onclick="abrirModal('modalRenda'); toggleFab()">💰 Renda</button>
+                    <button onclick="abrirModal('modalReserva'); toggleFab()">🏦 Reserva</button>
+                </div>
+            </div>
+
+            <button class="nav-item" onclick="navegar('reserve')">
+                <span class="icon">🎯</span>
+                <span class="label">Metas</span>
+            </button>
+            <button class="nav-item" onclick="navegar('perfil')">
+                <span class="icon">👤</span>
+                <span class="label">Perfil</span>
+            </button>
+        </nav>
 
         <div id="modalGasto" class="modal-dashboard">
             <section class="modal-dashboard-card">
@@ -411,74 +597,6 @@
                 </form>
             </section>
         </div>
-
-        <div id="modalHistorico" class="modal-dashboard">
-            <div class="modal-dashboard-card historico-expandido">
-                <div class="modal-dashboard-header">
-                    <div class="modal-dashboard-body-header">
-                        <h2 class="title-modals color-renda">Extrato Detalhado</h2>
-                        <button onclick="fecharModal('modalHistorico')" class="modal-dashboard-btn-close">✕</button>
-                    </div>
-                    <p>Movimentações do mês selecionado</p>
-                </div>
-
-                <div class="scroll-extract">
-                    <div id="tabelaGastosBody" class="lista-extrato-moderna">
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div id="modalListaReserva" class="modal-dashboard">
-            <div class="modal-dashboard-card">
-                <div class="modal-dashboard-header">
-                    <div class="modal-dashboard-body-header">
-                        <h2 class="title-modals color-reserva">Minhas Reservas</h2>
-                        <button onclick="fecharModal('modalListaReserva')" class="modal-dashboard-btn-close">X</button>
-                    </div>
-                    <div class="modal-dashboard-inputs-field">
-                        <div style="margin-top: 10px;" id="listaReservas">
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <template id="temp-linha-gasto">
-            <div class="extrato-item">
-                <div class="extrato-lado-esquerdo">
-                    <span class="extrato-dia"></span>
-                    <div class="extrato-detalhes">
-                        <strong class="td-principal"></strong>
-                        <span class="td-sub"></span>
-                    </div>
-                </div>
-
-                <div class="extrato-lado-direito">
-                    <div class="extrato-valores">
-                        <span class="td-valor-gasto"></span>
-                        <div class="extrato-badges">
-                            <span class="badge-cat-pura"></span>
-                            <span class="badge-user-pura"></span>
-                        </div>
-                    </div>
-                    <button class="btn-delete-small">×</button>
-                </div>
-            </div>
-        </template>
-
-        <template id="temp-reserva">
-            <div class="reserva-item-pura">
-                <div class="reserva-info">
-                    <span class="reserva-nome"></span>
-                    <span class="reserva-tag">Acumulado</span>
-                </div>
-                <div class="reserva-acoes">
-                    <span class="reserva-valor-num"></span>
-                    <button class="btn-delete-small">×</button>
-                </div>
-            </div>
-        </template>
     </main>
 
 

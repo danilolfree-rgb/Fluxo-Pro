@@ -317,19 +317,36 @@ window.excluirAcao = async (idOuNome, acao) => {
     }
 };
 
+window.navegar = (pagina) => {
+    // 1. Atualiza visual dos botões
+    document.querySelectorAll('.nav-item').forEach(btn => {
+        btn.classList.remove('active');
+        if(btn.innerText.toLowerCase().includes(pagina)) btn.classList.add('active');
+    });
+
+    // 2. Lógica de troca de telas (Exemplo simples)
+    // Você pode colocar cada parte do seu HTML dentro de uma <section id="tela-inicio"> etc.
+    const telas = ['init', 'extract', 'reserve', 'perfil'];
+    telas.forEach(t => {
+        const el = document.getElementById(`screen-${t}`);
+        if(el) el.style.display = (t === pagina) ? 'block' : 'none';
+    });
+
+    console.log(`Navegando para: ${pagina}`);
+};
+
+// Ajuste na função toggleFab para fechar ao clicar fora
 window.toggleFab = () => {
     const options = document.getElementById('fabOptions');
     const btn = document.querySelector('.fab-main');
-    
     if (options.style.display === 'flex') {
         options.style.display = 'none';
-        btn.classList.remove('active');
+        btn.style.transform = 'rotate(0deg)';
     } else {
         options.style.display = 'flex';
-        btn.classList.add('active');
+        btn.style.transform = 'rotate(45deg)';
     }
 };
-
 window.abrirModal = (id) => document.getElementById(id).style.display = 'flex';
 window.fecharModal = (id) => document.getElementById(id).style.display = 'none';
 
