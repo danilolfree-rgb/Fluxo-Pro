@@ -90,10 +90,15 @@ async function atualizarDashboard() {
             }
         });
 
-        // 2. Filtrar lista de gastos do mês atual
+        // Substitua a parte onde filtra e ordena listaGastos por isso:
         const listaGastos = todosDados
             .filter(i => i.tipo === 'gasto' && i.mes === mes)
-            .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+            .sort((a, b) => {
+                // Ordena pela data escolhida (g.data). Se não tiver, usa created_at.
+                const dataA = new Date(a.data || a.created_at);
+                const dataB = new Date(b.data || b.created_at);
+                return dataB - dataA; // Mais recentes primeiro
+            });
 
         // 3. Executar Análise Inteligente (Abas/Insights)
         calcularAnalises(listaGastos, meta);
@@ -102,7 +107,7 @@ async function atualizarDashboard() {
         document.getElementById('saldoTotal').innerText = formatarMoeda(gnh - gst);
         document.getElementById('resumoGanhos').innerText = formatarMoeda(gnh);
         document.getElementById('resumoGastos').innerText = formatarMoeda(gst);
-        
+
         const subtitulo = document.getElementById('subtituloAura');
         if (subtitulo) subtitulo.innerText = "Resumo atualizado com sucesso ✨";
 
@@ -121,41 +126,48 @@ async function atualizarDashboard() {
         }
 
         // 6. Renderizar Histórico (Com lógica de Badge Solo/Casal)
+        // ... dentro de atualizarDashboard, parte 6 ...
         const tabelaBody = document.getElementById('tabelaGastosBody');
         const tempLinha = document.getElementById('temp-linha-gasto');
+
         if (tabelaBody && tempLinha) {
             tabelaBody.innerHTML = "";
+
             listaGastos.forEach(g => {
                 const clone = tempLinha.content.cloneNode(true);
-                const dia = new Date(g.created_at).getDate().toString().padStart(2, '0');
 
-                const elDia = clone.querySelector('.extrato-dia') || clone.querySelector('.td-dia');
-                if (elDia) elDia.innerText = dia;
+                // MUDANÇA AQUI: Prioriza o campo 'data' que você salvou
+                const dataRef = g.data || g.created_at;
 
-                clone.querySelector('.td-principal').innerText = g.descricao || 'Gasto';
-                clone.querySelector('.td-sub').innerText = g.pagamento || 'Débito';
-                clone.querySelector('.badge-cat-pura').innerText = `${icones[g.categoria] || '💸'} ${g.categoria}`;
+                // Tratamento para não bugar o dia (TZ)
+                let dataObj = g.data ? new Date(dataRef + 'T12:00:00') : new Date(dataRef);
 
+                const dia = dataObj.getDate().toString().padStart(2, '0');
+                clone.querySelector('.extrato-dia').innerText = dia;
+                // Textos principais
+                clone.querySelector('.td-principal').innerText = g.descricao || 'Sem descrição';
+                clone.querySelector('.td-sub').innerText = g.pagamento || 'Outros';
+
+                // Valor com cor dinâmica
+                const elValor = clone.querySelector('.td-valor-gasto');
+                elValor.innerText = formatarMoeda(g.valor);
+                // Se quiser diferenciar ganhos de gastos visualmente:
+                // elValor.style.color = g.tipo === 'renda' ? '#22c55e' : '#f8fafc';
+
+                // Categoria
+                const badgeCat = clone.querySelector('.badge-cat-pura');
+                badgeCat.innerText = `${icones[g.categoria] || '💸'} ${g.categoria}`;
+
+                // Lógica de Usuário (Casal)
                 const badgeUser = clone.querySelector('.badge-user-pura');
-                // Só mostra badge se for casal
-                if (meta.tipo_uso === 'casal' && g.responsavel && badgeUser) {
-                    const nomeAbreviado = g.responsavel.substring(0, 3).toUpperCase();
-                    badgeUser.innerText = nomeAbreviado;
-                    
-                    const meuNome = meta.display_name;
-                    const meuGenero = meta.genero;
-                    let generoResponsavel = (g.responsavel === meuNome) ? meuGenero : (meuGenero === 'm' ? 'f' : 'm');
-
-                    const cores = generoResponsavel === 'm' ? ["rgba(0, 123, 255, 0.2)", "#0d6efd"] : ["rgba(255, 20, 147, 0.2)", "#ff1493"];
-                    badgeUser.style.backgroundColor = cores[0];
-                    badgeUser.style.color = cores[1];
-                    badgeUser.style.border = `1px solid ${cores[1]}44`;
-                } else if (badgeUser) {
+                if (meta.tipo_uso === 'casal' && g.responsavel) {
+                    badgeUser.innerText = g.responsavel.split(' ')[0]; // Pega só primeiro nome
+                } else {
                     badgeUser.remove();
                 }
 
-                const btnExcluir = clone.querySelector('.btn-delete-small') || clone.querySelector('.btn-excluir-item');
-                if (btnExcluir) btnExcluir.onclick = () => excluirAcao(g.id, 'item');
+                // Ação de deletar
+                clone.querySelector('.btn-delete-small').onclick = () => excluirAcao(g.id, 'item');
 
                 tabelaBody.appendChild(clone);
             });
@@ -222,7 +234,7 @@ window.mostrarInsight = (tipo, event) => {
     } else {
         // Se foi chamado automaticamente (ex: ao carregar a página)
         // Procura o botão que tem o onclick relacionado ao tipo
-        const btnAutomatico = Array.from(botoes).find(btn => 
+        const btnAutomatico = Array.from(botoes).find(btn =>
             btn.getAttribute('onclick')?.includes(`'${tipo}'`)
         );
         if (btnAutomatico) btnAutomatico.classList.add('active');
@@ -254,50 +266,66 @@ async function enviar(tipo) {
     try {
         const { data: { session } } = await s_client.auth.getSession();
         const meta = session.user.user_metadata;
+        const mesAtual = document.getElementById('mesGlobal').value;
 
-        const payload = {
-            tipo,
-            mes: document.getElementById('mesGlobal').value,
-            user_id: session.user.id
+        // 1. Criamos o objeto base com o que é comum a todos
+        let payload = {
+            user_id: session.user.id,
+            tipo: tipo,
+            mes: mesAtual
         };
 
-        const config = {
-            gasto: () => ({
-                valor: parseFloat(document.getElementById('valGasto').value),
-                descricao: document.getElementById('descGasto').value,
-                categoria: document.getElementById('catGasto').value,
-                pagamento: document.getElementById('pagGasto').value,
-                data: document.getElementById('dataGasto').value,
-                responsavel: document.querySelector('input[name="quemGastou"]:checked')?.value === 'partner'
-                    ? meta.parceiro_nome : meta.display_name
-            }),
-            renda: () => ({
-                valor: parseFloat(document.getElementById('valRenda').value),
-                categoria: document.getElementById('catRenda').value,
-                descricao: "Entrada"
-            }),
-            reserva: () => ({
-                valor: parseFloat(document.getElementById('valReserva').value),
-                descricao: document.getElementById('descReserva').value,
-                categoria: "Investimento"
-            })
-        };
+        // 2. Preenchemos os campos específicos baseados no tipo
+        if (tipo === 'gasto') {
+            const dataEscolha = document.getElementById('dataGasto').value;
+            payload.valor = parseFloat(document.getElementById('valGasto').value);
+            payload.descricao = document.getElementById('descGasto').value;
+            payload.categoria = document.getElementById('catGasto').value;
+            payload.pagamento = document.getElementById('pagGasto').value;
+            payload.data = dataEscolha; // Campo de data customizada
+            payload.responsavel = document.querySelector('input[name="quemGastou"]:checked')?.value === 'partner'
+                ? meta.parceiro_nome : meta.display_name;
+        }
+        else if (tipo === 'renda') {
+            payload.valor = parseFloat(document.getElementById('valRenda').value);
+            payload.categoria = document.getElementById('catRenda').value;
+            payload.descricao = "Entrada";
+            // Para renda, usamos a data de hoje como padrão se não houver campo
+            payload.data = new Date().toISOString().split('T')[0];
+        }
+        else if (tipo === 'reserva') {
+            payload.valor = parseFloat(document.getElementById('valReserva').value);
+            payload.descricao = document.getElementById('descReserva').value;
+            payload.categoria = "Investimento";
+            payload.data = new Date().toISOString().split('T')[0];
+        }
 
-        Object.assign(payload, config[tipo]());
-        if (!payload.valor) return alert("Insira um valor válido");
+        // Validação simples
+        if (!payload.valor || isNaN(payload.valor)) {
+            return alert("Por favor, insira um valor válido.");
+        }
 
         btn.disabled = true;
+
+        // 3. Envio para o Supabase
         const { error } = await s_client.from('Lançamentos').insert([payload]);
+
         if (error) throw error;
 
+        // Sucesso: Fecha modal e limpa campos
         fecharModal(`modal${tipo.charAt(0).toUpperCase() + tipo.slice(1)}`);
-        await atualizarDashboard();
 
+        // Limpar inputs específicos
         if (tipo === 'gasto') {
             document.getElementById('valGasto').value = "";
             document.getElementById('descGasto').value = "";
         }
+
+        // Atualiza a tela para mostrar o novo gasto
+        await atualizarDashboard();
+
     } catch (err) {
+        console.error("Erro detalhado:", err);
         alert("Erro ao salvar: " + err.message);
     } finally {
         btn.disabled = false;
@@ -323,7 +351,7 @@ window.navegar = (pagina) => {
     // 1. Atualiza visual dos botões
     document.querySelectorAll('.nav-item').forEach(btn => {
         btn.classList.remove('active');
-        if(btn.innerText.toLowerCase().includes(pagina)) btn.classList.add('active');
+        if (btn.innerText.toLowerCase().includes(pagina)) btn.classList.add('active');
     });
 
     // 2. Lógica de troca de telas (Exemplo simples)
@@ -331,7 +359,7 @@ window.navegar = (pagina) => {
     const telas = ['init', 'extract', 'reserve', 'perfil'];
     telas.forEach(t => {
         const el = document.getElementById(`screen-${t}`);
-        if(el) el.style.display = (t === pagina) ? 'block' : 'none';
+        if (el) el.style.display = (t === pagina) ? 'block' : 'none';
     });
 
     console.log(`Navegando para: ${pagina}`);
@@ -349,7 +377,15 @@ window.toggleFab = () => {
         btn.style.transform = 'rotate(45deg)';
     }
 };
-window.abrirModal = (id) => document.getElementById(id).style.display = 'flex';
+window.abrirModal = function (id) {
+    document.getElementById(id).style.display = 'flex';
+    // Adicione isso à sua função abrirModal('modalGasto')
+    const inputData = document.getElementById('dataGasto');
+    if (!inputData.value) { // Só preenche se estiver vazio
+        const hoje = new Date().toISOString().split('T')[0];
+        inputData.value = hoje;
+    }
+}
 window.fecharModal = (id) => document.getElementById(id).style.display = 'none';
 
 // Exportações
