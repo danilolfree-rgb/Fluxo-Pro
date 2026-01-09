@@ -1,4 +1,4 @@
-import { s_client } from "/config.js";
+import { s_client } from "../../config.js";
 
 // --- AUTH & SESSÃO ---
 export async function checarSessao() {
