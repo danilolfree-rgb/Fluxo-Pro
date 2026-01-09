@@ -223,7 +223,4 @@ window.toggleFab = () => {
 window.abrirModal = (id) => abrirModalUI(id);
 window.fecharModal = (id) => fecharModalUI(id);
 
-// js/main.js
 
-// Configure isso uma única vez (ex: no window.onload)
-const tabela = document.getElementById('tabelaGastosBody');
