@@ -32,9 +32,9 @@ window.onload = async function () {
 
     if (!usuarioLogado) {
         // Verifica se NÃO estamos na página de login
-        if (!window.location.pathname.endsWith('../index.html') && window.location.pathname !== '/') {
+        if (!window.location.pathname.endsWith('login.html') && window.location.pathname !== '/') {
             console.log("Redirecionando para login...");
-            window.location.replace('../index.html');
+            window.location.replace('../pages/login/login.html');
         }
         return;
     }

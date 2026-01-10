@@ -4,7 +4,6 @@ import { checarSessao } from "../shared/auth.js";
 async function validarAcesso() {
     try {
         const usuario = await checarSessao();
-        document.body.style.opacity = '0'
 
         if (usuario) {
             // Se houver usuário, redireciona para o dashboard
