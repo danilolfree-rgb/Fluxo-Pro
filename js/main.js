@@ -3,6 +3,8 @@
 // ================================================
 
 import { checarSessao } from './shared/auth.js';
+import { debounce } from './shared/utils.js';
+import { configurarSincronizacao } from './shared/offline.js';
 import { buscarDadosLancamentos, salvarLancamentoBD, excluirLancamentoBD } from './dashboard/api.js';
 import { calcularResumoMensal, calcularAnalises } from './dashboard/logic.js';
 import {
@@ -20,38 +22,42 @@ let usuarioLogado = null; // Guardamos os dados do usuário aqui
 
 // --- ATUALIZA INFORMAÇÕES AO INICIALIZAR ---
 
+// Ela espera 300ms antes de executar a lógica pesada
+const atualizarDashboardDebounced = debounce((novoMes) => {
+    atualizarDashboard(novoMes);
+}, 300);
+
 window.onload = async function () {
     usuarioLogado = await checarSessao();
     if (!usuarioLogado) return;
 
-    // Configura o seletor
+    configurarSincronizacao()
+
+    // 2. Configura o seletor para usar a versão OTIMIZADA
     const mesInicial = configurarSeletorMeses((novoMes) => {
-        atualizarDashboard(novoMes); // Quando mudar o mês, atualiza
+        // Ao clicar nas setas, atualizamos o texto da tela IMEDIATAMENTE (para dar feedback)
+        // Mas a busca no banco e o desenho da tabela esperam o debounce
+        atualizarDashboardDebounced(novoMes);
     });
 
-    // Busca inicial
+    // Busca inicial (sem debounce, pois é o primeiro carregamento)
     try {
         const meta = usuarioLogado.user.user_metadata;
         const ids = [usuarioLogado.user.id, meta.parceiro_id].filter(Boolean);
-
         dadosCache = await buscarDadosLancamentos(ids);
 
-        // Primeira execução
         atualizarDashboard(mesInicial);
-
     } catch (err) {
         console.error("Erro inicial:", err);
     }
 
+    // Delegação de Eventos (Correto!)
     const tabelaBody = document.getElementById('tabelaGastosBody');
     if (tabelaBody) {
         tabelaBody.addEventListener('click', (event) => {
-            // Encontra o botão mais próximo que tenha data-acao="excluir"
             const btn = event.target.closest('[data-acao="excluir"]');
-
             if (btn) {
                 const idParaDeletar = btn.dataset.id;
-                // Chama a função de exclusão passando o ID
                 window.excluirAcao(idParaDeletar, 'item');
             }
         });
@@ -98,12 +104,12 @@ window.enviar = async (tipo) => {
         const meta = usuarioLogado.user.user_metadata;
         const mesAtual = document.getElementById('mesGlobal').value;
 
-        // Montagem do Objeto (Payload)
+        // --- 1. MONTAGEM DO PAYLOAD (Não pode faltar!) ---
         let payload = {
             user_id: usuarioLogado.user.id,
             tipo: tipo,
             mes: mesAtual,
-            data: new Date().toISOString().split('T')[0] // Data padrão
+            data: new Date().toISOString().split('T')[0] 
         };
 
         if (tipo === 'gasto') {
@@ -124,26 +130,57 @@ window.enviar = async (tipo) => {
             payload.categoria = "Investimento";
         }
 
-        // Validação
+        // Validação básica
         if (!payload.valor || isNaN(payload.valor)) {
             return alert("Por favor, insira um valor válido.");
         }
 
         btn.disabled = true;
 
-        // Persistência (API)
-        await salvarLancamentoBD(payload);
+        // --- 2. LÓGICA OTIMISTA (Interface responde na hora) ---
+        
+        const itemOtimista = { 
+            ...payload, 
+            id: 'temp-' + Date.now(), 
+            status: 'pendente' 
+        };
 
-        // Sucesso: Interface
         fecharModalUI(`modal${tipo.charAt(0).toUpperCase() + tipo.slice(1)}`);
         limparFormulario(tipo);
 
-        // Atualização Global (Refresh)
-        const ids = [usuarioLogado.user.id, meta.parceiro_id].filter(Boolean);
-        dadosCache = await buscarDadosLancamentos(ids); // Recarrega o cache local
-        atualizarDashboard(mesAtual);
+        // Adiciona ao cache local e desenha a tabela imediatamente
+        dadosCache.push(itemOtimista);
+        atualizarDashboard(payload.mes); 
 
-        alert("Salvo com sucesso!");
+        try {
+            // --- 3. TENTA SALVAR NO BANCO ---
+            const resultadoReal = await salvarLancamentoBD(payload);
+
+            // Troca o item temporário pelo oficial do banco
+            dadosCache = dadosCache.filter(i => i.id !== itemOtimista.id);
+            dadosCache.push(resultadoReal);
+            
+            // Recarrega o cache para garantir que os IDs e dados estejam 100% sincronizados
+            const ids = [usuarioLogado.user.id, meta.parceiro_id].filter(Boolean);
+            dadosCache = await buscarDadosLancamentos(ids);
+            
+            atualizarDashboard(payload.mes);
+
+        } catch (err) {
+            // --- 4. TRATAMENTO DE ERRO / OFFLINE ---
+            if (!window.navigator.onLine) {
+                const pendentes = JSON.parse(localStorage.getItem('sync_pendente') || '[]');
+                pendentes.push(payload);
+                localStorage.setItem('sync_pendente', JSON.stringify(pendentes));
+                
+                alert("Salvo localmente! Sincronizaremos assim que a internet voltar.");
+            } else {
+                // Se o erro não for internet, removemos o item da tela pois falhou de verdade
+                dadosCache = dadosCache.filter(i => i.id !== itemOtimista.id);
+                atualizarDashboard(payload.mes);
+                throw err; 
+            }
+        }
 
     } catch (err) {
         console.error("Erro ao salvar:", err);
@@ -223,4 +260,24 @@ window.toggleFab = () => {
 window.abrirModal = (id) => abrirModalUI(id);
 window.fecharModal = (id) => fecharModalUI(id);
 
+// Vigia de Conexão - Cole no final do seu main.js
+window.addEventListener('online', async () => {
+    const pendentes = JSON.parse(localStorage.getItem('sync_pendente') || '[]');
+    if (pendentes.length === 0) return;
 
+    console.log("Internet detectada! Sincronizando dados pendentes...");
+
+    for (const item of pendentes) {
+        try {
+            await salvarLancamentoBD(item);
+        } catch (err) {
+            console.error("Erro ao sincronizar item:", err);
+        }
+    }
+
+    localStorage.removeItem('sync_pendente');
+    alert("Sincronização concluída! Seus gastos offline foram salvos no banco.");
+    
+    // Recarrega para garantir que os dados oficiais apareçam
+    window.location.reload();
+});
