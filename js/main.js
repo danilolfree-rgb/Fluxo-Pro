@@ -28,30 +28,54 @@ const atualizarDashboardDebounced = debounce((novoMes) => {
 }, 300);
 
 window.onload = async function () {
-    usuarioLogado = await checarSessao();
-    if (!usuarioLogado) return;
+    usuarioLogado = await checarSessao(); 
 
-    configurarSincronizacao()
+    if (!usuarioLogado) {
+        if (!window.location.pathname.includes('index.html')) {
+            window.location.replace('index.html');
+        }
+        return;
+    }
+    
+    console.log("Usuário autenticado:", usuarioLogado.user.email);
 
-    // 2. Configura o seletor para usar a versão OTIMIZADA
+    // 1. Configurações Iniciais
+    configurarSincronizacao();
+
     const mesInicial = configurarSeletorMeses((novoMes) => {
-        // Ao clicar nas setas, atualizamos o texto da tela IMEDIATAMENTE (para dar feedback)
-        // Mas a busca no banco e o desenho da tabela esperam o debounce
         atualizarDashboardDebounced(novoMes);
     });
 
-    // Busca inicial (sem debounce, pois é o primeiro carregamento)
+    // 2. BUSCA DE DADOS (Aqui estava o erro)
     try {
+        // Extraímos o meta aqui para poder usar nos IDs
         const meta = usuarioLogado.user.user_metadata;
         const ids = [usuarioLogado.user.id, meta.parceiro_id].filter(Boolean);
+
+        console.log("Buscando dados para os IDs:", ids);
         dadosCache = await buscarDadosLancamentos(ids);
 
+        // Salva para uso offline
+        localStorage.setItem('ultimo_cache_dados', JSON.stringify(dadosCache));
+
+        // Renderiza a tela
         atualizarDashboard(mesInicial);
+
     } catch (err) {
-        console.error("Erro inicial:", err);
+        console.error("Erro na busca inicial:", err);
+        
+        // Tenta carregar do cache se estiver offline
+        if (!window.navigator.onLine) {
+            const cacheSalvo = localStorage.getItem('ultimo_cache_dados');
+            if (cacheSalvo) {
+                dadosCache = JSON.parse(cacheSalvo);
+                atualizarDashboard(mesInicial);
+                console.log("Dados carregados do cache offline.");
+            }
+        }
     }
 
-    // Delegação de Eventos (Correto!)
+    // 3. Delegação de Eventos (Exclusão)
     const tabelaBody = document.getElementById('tabelaGastosBody');
     if (tabelaBody) {
         tabelaBody.addEventListener('click', (event) => {
@@ -109,7 +133,7 @@ window.enviar = async (tipo) => {
             user_id: usuarioLogado.user.id,
             tipo: tipo,
             mes: mesAtual,
-            data: new Date().toISOString().split('T')[0] 
+            data: new Date().toISOString().split('T')[0]
         };
 
         if (tipo === 'gasto') {
@@ -138,11 +162,11 @@ window.enviar = async (tipo) => {
         btn.disabled = true;
 
         // --- 2. LÓGICA OTIMISTA (Interface responde na hora) ---
-        
-        const itemOtimista = { 
-            ...payload, 
-            id: 'temp-' + Date.now(), 
-            status: 'pendente' 
+
+        const itemOtimista = {
+            ...payload,
+            id: 'temp-' + Date.now(),
+            status: 'pendente'
         };
 
         fecharModalUI(`modal${tipo.charAt(0).toUpperCase() + tipo.slice(1)}`);
@@ -150,7 +174,7 @@ window.enviar = async (tipo) => {
 
         // Adiciona ao cache local e desenha a tabela imediatamente
         dadosCache.push(itemOtimista);
-        atualizarDashboard(payload.mes); 
+        atualizarDashboard(payload.mes);
 
         try {
             // --- 3. TENTA SALVAR NO BANCO ---
@@ -159,11 +183,11 @@ window.enviar = async (tipo) => {
             // Troca o item temporário pelo oficial do banco
             dadosCache = dadosCache.filter(i => i.id !== itemOtimista.id);
             dadosCache.push(resultadoReal);
-            
+
             // Recarrega o cache para garantir que os IDs e dados estejam 100% sincronizados
             const ids = [usuarioLogado.user.id, meta.parceiro_id].filter(Boolean);
             dadosCache = await buscarDadosLancamentos(ids);
-            
+
             atualizarDashboard(payload.mes);
 
         } catch (err) {
@@ -172,13 +196,13 @@ window.enviar = async (tipo) => {
                 const pendentes = JSON.parse(localStorage.getItem('sync_pendente') || '[]');
                 pendentes.push(payload);
                 localStorage.setItem('sync_pendente', JSON.stringify(pendentes));
-                
+
                 alert("Salvo localmente! Sincronizaremos assim que a internet voltar.");
             } else {
                 // Se o erro não for internet, removemos o item da tela pois falhou de verdade
                 dadosCache = dadosCache.filter(i => i.id !== itemOtimista.id);
                 atualizarDashboard(payload.mes);
-                throw err; 
+                throw err;
             }
         }
 
@@ -277,7 +301,7 @@ window.addEventListener('online', async () => {
 
     localStorage.removeItem('sync_pendente');
     alert("Sincronização concluída! Seus gastos offline foram salvos no banco.");
-    
+
     // Recarrega para garantir que os dados oficiais apareçam
     window.location.reload();
 });
