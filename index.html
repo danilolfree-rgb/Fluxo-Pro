@@ -30,9 +30,16 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="stylesheet" href="./pages/dashboard/style/footer.css">
+    <style>
+        body {
+            opacity: 0;
+        }
+    </style>
 
 </head>
+<script type="module" src="./js/index/index.js"></script>
 
 <body>
     <main>
@@ -73,7 +80,7 @@
                 </div>
             </div>
 
-            <a href="pages/login/login.html" class="btn-main">
+            <a href="./pages/login/login.html" class="btn-main">
                 Adquirir controle financeiro
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
                     stroke-linecap="round" stroke-linejoin="round">
@@ -102,7 +109,6 @@
     </footer>
 
 </body>
-<script type="module" src="./js/index/index.js"></script>
 <script>
 
     const canvas = document.getElementById('fundoAnimado');

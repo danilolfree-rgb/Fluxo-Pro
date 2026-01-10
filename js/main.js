@@ -28,15 +28,17 @@ const atualizarDashboardDebounced = debounce((novoMes) => {
 }, 300);
 
 window.onload = async function () {
-    usuarioLogado = await checarSessao(); 
+    usuarioLogado = await checarSessao();
 
     if (!usuarioLogado) {
-        if (!window.location.pathname.includes('index.html')) {
-            window.location.replace('index.html');
+        // Verifica se NÃO estamos na página de login
+        if (!window.location.pathname.endsWith('index.html') && window.location.pathname !== '/') {
+            console.log("Redirecionando para login...");
+            window.location.replace('login.html');
         }
         return;
     }
-    
+
     console.log("Usuário autenticado:", usuarioLogado.user.email);
 
     // 1. Configurações Iniciais
@@ -63,7 +65,7 @@ window.onload = async function () {
 
     } catch (err) {
         console.error("Erro na busca inicial:", err);
-        
+
         // Tenta carregar do cache se estiver offline
         if (!window.navigator.onLine) {
             const cacheSalvo = localStorage.getItem('ultimo_cache_dados');
