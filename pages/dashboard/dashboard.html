@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5, user-scalable=no">
     <title>Aura | Controle Financeiro</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap"
@@ -14,49 +14,10 @@
     <link rel="stylesheet" href="style/global.css">
     <link rel="stylesheet" href="style/modais.css">
     <link rel="stylesheet" href="style/buttons-action.css">
+    <link rel="stylesheet" href="style/menu-bar.css">
     <link rel="stylesheet" href="style/footer.css">
     <style>
         /* CSS Específico para a Tabela de Histórico Moderna */
-
-        .badge-cat {
-            padding: 5px 10px;
-            border-radius: 8px;
-            font-size: 0.7rem;
-            font-weight: 700;
-            background: rgba(129, 140, 248, 0.15);
-            color: #818cf8;
-            border: 1px solid rgba(129, 140, 248, 0.2);
-        }
-
-        .badge-user {
-            font-size: 0.65rem;
-            color: #cbd5e1;
-            background: rgba(255, 255, 255, 0.1);
-            padding: 2px 6px;
-            border-radius: 4px;
-            margin-left: 5px;
-        }
-
-        .title-reserva {
-            color: #0dcaf0;
-            /* Cor Info */
-            font-weight: bold;
-            margin: 0;
-            letter-spacing: 1px;
-        }
-
-        .btn-close-puro {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 1.5rem;
-            cursor: pointer;
-            opacity: 0.7;
-        }
-
-        .btn-close-puro:hover {
-            opacity: 1;
-        }
 
         .label-puro {
             font-size: 0.7rem;
@@ -66,7 +27,7 @@
             margin-left: 5px;
         }
 
-        .form-control-puro {
+        .modal-dashboard-input {
             width: 100%;
             background: rgba(2, 6, 23, 0.5);
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -77,7 +38,7 @@
             margin-top: 5px;
         }
 
-        .form-control-puro:focus {
+        .modal-dashboard-input:focus {
             border-color: #0dcaf0;
         }
 
@@ -129,99 +90,413 @@
             font-size: 1rem;
         }
 
-        .btn-delete-small {
+        .insights-section {
+            margin-top: 20px;
+        }
+
+        .insight-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 12px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+        }
+
+        .tab-btn {
             background: rgba(255, 255, 255, 0.05);
-            border: none;
-            color: #64748b;
-            width: 24px;
-            height: 24px;
-            border-radius: 6px;
-            cursor: pointer;
-            line-height: 1;
-        }
-
-        .btn-delete-small:hover {
-            background: #fb7185;
-            color: white;
-        }
-
-        /* Estilos da Tabela (Puro) */
-        .badge-cat-pura {
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-size: 0.7rem;
-            font-weight: 700;
-            background: rgba(129, 140, 248, 0.1);
-            color: #818cf8;
-        }
-
-        .badge-user-pura {
-            font-size: 0.6rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
             color: #94a3b8;
-            background: rgba(255, 255, 255, 0.05);
-            padding: 2px 5px;
-            border-radius: 4px;
-            margin-left: 6px;
-        }
-
-        .btn-excluir-item {
-            background: none;
-            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.8rem;
             cursor: pointer;
-            filter: grayscale(1);
-            opacity: 0.5;
-            transition: 0.2s;
+            white-space: nowrap;
+            transition: all 0.3s ease;
         }
 
-        .btn-excluir-item:hover {
-            filter: grayscale(0);
-            opacity: 1;
-        }
-
-        /* Estilo para o botão X de fechar */
-        .btn-close-modal {
-            background: none;
-            border: none;
+        .tab-btn.active {
+            background: #6366f1;
             color: white;
-            font-size: 28px;
-            cursor: pointer;
-            line-height: 1;
-            transition: 0.2s;
+            border-color: #6366f1;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
         }
 
-        .btn-close-modal:hover {
-            color: #ff4d4d;
-            transform: scale(1.1);
+        .insight-card-aura {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.7), rgba(15, 23, 42, 0.8));
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
         }
 
-        /* Garante que o rádio check de "Quem gastou" apareça bem */
-        .btn-check:checked+.btn-outline-light {
-            background-color: #6366f1 !important;
-            /* Cor principal da Aura */
-            border-color: #6366f1 !important;
+        #insight-label {
+            display: block;
+            color: #94a3b8;
+            font-size: 0.8rem;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
-        /* Container do Grid */
-        .aura-grid-form {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            /* Duas colunas iguais */
-            gap: 15px;
-            /* Espaçamento entre os campos */
-            padding: 10px 0;
+        #insight-value {
+            margin: 0;
+            font-size: 1.4rem;
+            color: #f8fafc;
+            font-weight: 700;
         }
 
-        .grid-item {
+        #insight-detail {
+            color: #6366f1;
+            font-weight: 600;
+        }
+
+        :root {
+            --nav-bg: rgba(15, 23, 42, 0.9);
+            --primary: #6366f1;
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 70px;
+            background: var(--nav-bg);
+            backdrop-filter: blur(15px);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: env(safe-area-inset-bottom);
+            /* Suporte para iPhone X+ */
+            z-index: 1000;
+        }
+
+        .nav-item {
+            background: none;
+            border: none;
+            color: #94a3b8;
             display: flex;
             flex-direction: column;
-            gap: 5px;
+            align-items: center;
+            font-size: 0.7rem;
+            gap: 4px;
+            cursor: pointer;
+            transition: 0.3s;
         }
 
-        .full-width {
-            grid-column: span 2;
-            /* Ocupa as duas colunas */
+        .nav-item.active {
+            color: var(--primary);
         }
 
+        .nav-item .icon {
+            font-size: 1.2rem;
+        }
+
+        /* Ajuste do FAB no Centro */
+        .fab-wrapper {
+            position: relative;
+            top: -20px;
+            /* Faz o botão central subir um pouco */
+        }
+
+        .fab-main {
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            border: 4px solid #0f172a;
+            /* "Corta" a barra nav */
+            font-size: 24px;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+            cursor: pointer;
+        }
+
+        .fab-options {
+            position: absolute;
+            bottom: 70px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+            width: 140px;
+        }
+
+        .fab-options button {
+            background: #1e293b;
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+
+        .app-screen {
+            padding: 10px;
+            padding-bottom: 100px;
+            /* Espaço para não cobrir o conteúdo com o menu bottom */
+            animation: fadeIn 0.3s ease;
+        }
+
+        /* Animação suave de entrada */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Ocultar seções por padrão via classe se preferir */
+        .hidden {
+            display: none !important;
+        }
+
+        .lista-extrato-moderna {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding-bottom: 20px;
+        }
+
+        /* Container Principal do Item */
+        .extrato-item {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            width: 100%;
+            /* Garante que ocupe a largura total */
+            box-sizing: border-box;
+            /* Evita que o padding "estufe" o card */
+        }
+
+        .extrato-item:active {
+            transform: scale(0.98);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        /* Lado Esquerdo (Dia + Texto) */
+        .extrato-lado-esquerdo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 0;
+            /* O segredo para o flex-child permitir truncate */
+            flex: 1;
+            /* Ocupa todo o espaço que sobrar */
+        }
+
+        .extrato-dia {
+            flex-shrink: 0;
+            width: 40px;
+            height: 40px;
+            background: var(--primary);
+            /* Verifique se --primary está definido como #6366f1 */
+            color: #ffffff !important;
+            /* Força o número a ser branco */
+            border-radius: 10px;
+            font-size: 18px;
+            /* Um pouco menor para caber melhor */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            /* Deixa o número bem visível */
+            line-height: 1;
+        }
+
+        /* Container do Texto - ELÁSTICO */
+        .extrato-detalhes {
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            /* Essencial para o truncate funcionar aqui dentro */
+            flex: 1;
+        }
+
+        .td-principal {
+            display: block;
+            width: 100%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            /* Os três pontinhos ... */
+            color: #f8fafc;
+        }
+
+        .td-sub {
+            color: #94a3b8;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+        }
+
+        /* Lado Direito (Valor + Delete) - TRAVADO */
+        .extrato-lado-direito {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-shrink: 0;
+            /* Impede que o valor suma da tela */
+            text-align: right;
+        }
+
+        .extrato-valores {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        .td-valor-gasto {
+            color: #f8fafc;
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        /* Badges menores e elegantes */
+        .extrato-badges {
+            display: flex;
+            gap: 4px;
+            justify-content: flex-end;
+        }
+
+        .badge-cat-pura,
+        .badge-user-pura {
+            font-size: 0.65rem;
+            padding: 2px 8px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            color: #94a3b8;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-delete-small {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            border: none;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Perfil Estilo Apple/Nubank */
+        .perfil-container-minimal {
+            padding: 30px 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .perfil-minimal-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .avatar-minimal {
+            width: 64px;
+            height: 64px;
+            border-radius: 20px;
+            /* Borda levemente arredondada, não círculo */
+            background: #2563eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .group-title {
+            font-size: 0.8rem;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 0 0 10px 10px;
+        }
+
+        .menu-group {
+            margin-bottom: 25px;
+        }
+
+        .menu-item {
+            background: #1e293b;
+            /* Fundo levemente diferente do fundo da página */
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border-radius: 16px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .menu-item:hover {
+            background: #334155;
+        }
+
+        .item-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+        }
+
+        /* Cores dos ícones */
+        .item-icon.blue {
+            background: rgba(37, 99, 235, 0.2);
+        }
+
+        .item-icon.purple {
+            background: rgba(139, 92, 246, 0.2);
+        }
+
+        .item-icon.green {
+            background: rgba(34, 197, 94, 0.2);
+        }
+
+        .item-icon.red {
+            background: rgba(239, 68, 68, 0.2);
+        }
+
+        .item-text {
+            flex: 1;
+            font-weight: 500;
+        }
+
+        .item-arrow {
+            color: #475569;
+            font-size: 1.2rem;
+        }
+
+        .item-status {
+            font-size: 0.9rem;
+            color: #94a3b8;
+        }
+
+        .menu-item.danger .item-text {
+            color: #ef4444;
+        }
     </style>
 </head>
 
@@ -246,8 +521,9 @@
         </div>
     </nav>
     <main>
-        <div class="container px-4">
 
+        <!-- First screen - dashboard -->
+        <section id="screen-init" class="app-screen">
             <div class="header-section mb-4">
                 <h4 id="tituloSaudacao" style="font-weight: 800; color: white; margin-bottom: 4px;">Olá!</h4>
                 <p id="subtituloAura" style="color: #64748b; font-size: 14px; margin-bottom: 0;">Carregando seu
@@ -275,27 +551,175 @@
                     </div>
                 </div>
             </div>
+            <section class="insights-section">
+                <div class="insight-tabs">
+                    <button id="tab-btn" class="tab-btn" onclick="mostrarInsight('categoria')">🏷️ Categoria</button>
+                    <button id="tab-second-btn" class="tab-btn" onclick="mostrarInsight('pagamento')">💳
+                        Pagamento</button>
+                    <button id="btn-insight-quem" class="tab-btn" onclick="mostrarInsight('quem', event)">👥
+                        Responsável</button>
+                </div>
 
-            <div class="action-grid-mini">
-                <button class="btn-mini" onclick="abrirModal('modalGasto')"><i>📉</i> Gasto</button>
-                <button class="btn-mini" onclick="abrirModal('modalRenda')"><i>💰</i> Renda</button>
-                <button class="btn-mini" onclick="abrirModal('modalReserva')"><i>🏦</i> Reserva</button>
+                <div id="insight-display" class="insight-card-aura">
+                    <div class="insight-content">
+                        <span id="insight-label">Carregando análise...</span>
+                        <h3 id="insight-value">---</h3>
+                        <small id="insight-detail">---</small>
+                    </div>
+                </div>
+            </section>
+        </section>
+
+        <!-- Second screen - extract -->
+        <section id="screen-extract" class="app-screen" style="display: none;">
+            <div class="modal-dashboard-header">
+                <div class="modal-dashboard-body-header">
+                    <h2 class="title-modals color-renda">Extrato Detalhado</h2>
+                </div>
+                <p>Movimentações do mês selecionado</p>
             </div>
 
-            <button class="btn btn-outline-light btn-sm mt-2 w-100" onclick="abrirModal('modalHistorico')"
-                style="border-radius: 12px; border-color: rgba(255,255,255,0.1);">
-                Ver Extrato Detalhado
+            <div class="scroll-extract">
+                <div id="tabelaGastosBody" class="lista-extrato-moderna">
+                </div>
+            </div>
+            <template id="temp-linha-gasto">
+                <div class="extrato-item">
+                    <div class="extrato-lado-esquerdo">
+                        <span class="extrato-dia"></span>
+                        <div class="extrato-detalhes">
+                            <strong class="td-principal"></strong>
+                            <span class="td-sub"></span>
+                        </div>
+                    </div>
+
+                    <div class="extrato-lado-direito">
+                        <div class="extrato-valores">
+                            <span class="td-valor-gasto"></span>
+                            <div class="extrato-badges">
+                                <span class="badge-cat-pura"></span>
+                                <span class="badge-user-pura"></span>
+                            </div>
+                        </div>
+                        <button class="btn-delete-small" data-acao="excluir" data-id="">×</button>
+                    </div>
+                </div>
+            </template>
+        </section>
+
+        <!-- Third screen - reserve -->
+        <section id="screen-reserve" class="app-screen" style="display: none;">
+            <div class="modal-dashboard-body-header">
+                <h2 class="title-modals color-reserva">Minhas Reservas</h2>
+            </div>
+            <div class="modal-dashboard-inputs-field">
+                <div style="margin-top: 10px;" id="listaReservas">
+                </div>
+            </div>
+            <template id="temp-reserva">
+                <div class="reserva-item-pura">
+                    <div class="reserva-info">
+                        <span class="reserva-nome"></span>
+                        <span class="reserva-tag">Acumulado</span>
+                    </div>
+                    <div class="reserva-acoes">
+                        <span class="reserva-valor-num"></span>
+                        <button class="btn-delete-small">×</button>
+                    </div>
+                </div>
+            </template>
+        </section>
+
+        <section id="screen-perfil" class="app-screen" style="display: none;">
+            <div class="perfil-container-minimal">
+
+                <header class="perfil-minimal-header">
+                    <div class="avatar-minimal" id="avatar-sigla">--</div>
+                    <div class="user-titles">
+                        <div class="nome-flex">
+                            <h1 id="perfil-nome-principal">---</h1>
+                            <span id="perfil-e-parceiro" style="display:none;"> & <span
+                                    id="perfil-nome-parceiro"></span></span>
+                        </div>
+                        <p id="perfil-email">---</p>
+                    </div>
+                </header>
+
+                <div class="menu-group">
+                    <h3 class="group-title">Conta</h3>
+                    <div class="menu-item" onclick="abrirModal('modalEditarNome')">
+                        <div class="item-icon blue">👤</div>
+                        <div class="item-text">Editar meu apelido</div>
+                        <div class="item-arrow">›</div>
+                    </div>
+                    <div class="menu-item" id="item-parceria" onclick="gerenciarParceria()">
+                        <div class="item-icon purple">🤝</div>
+                        <div class="item-text">Gerenciar parceria</div>
+                        <div class="item-status" id="status-parceria-texto">Solo</div>
+                        <div class="item-arrow">›</div>
+                    </div>
+                </div>
+
+                <div class="menu-group">
+                    <h3 class="group-title">Relatórios</h3>
+                    <div class="menu-item" onclick="exportarDadosCSV()">
+                        <div class="item-icon green">📥</div>
+                        <div class="item-text">Exportar dados (CSV)</div>
+                        <div class="item-arrow">›</div>
+                    </div>
+                </div>
+
+                <div class="menu-group">
+                    <div class="menu-item danger" onclick="logout()">
+                        <div class="item-icon red">🚪</div>
+                        <div class="item-text">Sair da conta</div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Menu of navigation -->
+        <nav class="bottom-nav">
+            <button class="nav-item active" onclick="navegar('init')">
+                <span class="icon">
+                    <i class="icon-menu" data-lucide="home"></i>
+                </span>
+                <span class="label">Início</span>
+            </button>
+            <button class="nav-item" onclick="navegar('extract')">
+                <span class="icon">
+                    <i class="icon-menu" data-lucide="arrow-up-down"></i>
+                </span>
+                <span class="label">Extrato</span>
             </button>
 
-            <div class="container mt-4 px-0">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h5 style="font-weight: 700; color: white; margin-bottom: 0;">Minhas Reservas</h5>
-                    <span class="badge rounded-pill bg-primary" id="countReservas">0</span>
-                </div>
-                <div id="listaReservas">
+            <div class="fab-wrapper">
+                <button class="fab-main" onclick="toggleFab()">
+                    <span>
+                        +
+                    </span>
+                </button>
+                <div class="fab-options" id="fabOptions">
+                    <button onclick="abrirModal('modalGasto'); toggleFab()">💸 Gasto</button>
+                    <button onclick="abrirModal('modalRenda'); toggleFab()">💰 Renda</button>
+                    <button onclick="abrirModal('modalReserva'); toggleFab()">🏦 Reserva</button>
                 </div>
             </div>
-        </div>
+
+            <button class="nav-item" onclick="navegar('reserve')">
+                <span class="icon">
+                    <i class="icon-menu" data-lucide="piggy-bank"></i>
+                </span>
+                <span class="label">Metas</span>
+            </button>
+            <button class="nav-item" onclick="navegar('perfil')">
+                <span class="icon">
+                    <i class="icon-menu" data-lucide="user-2"></i>
+                </span>
+                <span class="label">Perfil</span>
+            </button>
+        </nav>
 
         <div id="modalGasto" class="modal-dashboard">
             <section class="modal-dashboard-card">
@@ -311,39 +735,30 @@
 
                     <div>
                         <label class="label-puro">Valor</label>
-                        <input type="number" id="valGasto" class="form-control-puro" placeholder="R$ 0,00">
+                        <input type="number" id="valGasto" class="modal-dashboard-input" placeholder="R$ 0,00">
                     </div>
 
                     <div>
                         <label class="label-puro">Descrição</label>
-                        <input type="text" id="descGasto" class="form-control-puro" placeholder="Ex: Mercado">
+                        <input type="text" id="descGasto" class="modal-dashboard-input" placeholder="Ex: Mercado">
                     </div>
 
                     <div>
                         <label class="label-puro">Data</label>
-                        <input type="date" id="dataGasto" class="form-control-puro">
+                        <input type="date" id="dataGasto" class="modal-dashboard-input">
                     </div>
 
                     <div class="field-options">
                         <div class="modal-dashboard-input-option">
                             <label class="label-puro">Categoria</label>
-                            <select id="catGasto" class="form-control-puro">
-                                <option value="Alimentação">🍔 Alimentação</option>
-                                <option value="Casa">🏠 Moradia</option>
-                                <option value="Lazer">🎉 Lazer</option>
-                                <option value="Transporte">🚗 Transporte</option>
-                                <option value="Roupas">👕 Roupas</option>
-                                <option value="Viagem">✈️ Viagem</option>
-                                <option value="Fatura">🧾 Fatura</option>
-                                <option value="Material de trabalho">💼 Trabalho</option>
-                                <option value="Igreja">⛪ Igreja</option>
-                                <option value="Drogaria">💊 Drogaria</option>
+                            <select id="catGasto" class="modal-dashboard-input">
+
                             </select>
                         </div>
 
                         <div class="modal-dashboard-input-option">
                             <label class="label-puro">Pagamento</label>
-                            <select id="pagGasto" class="form-control-puro">
+                            <select id="pagGasto" class="modal-dashboard-input">
                                 <option value="Pix">💠 Pix</option>
                                 <option value="Crédito">💳 Crédito</option>
                                 <option value="Débito">💳 Débito</option>
@@ -384,7 +799,7 @@
                 <form onsubmit="event.preventDefault(); enviar('renda');" class="modal-dashboard-inputs-field">
                     <div class="modal-dashboard-input-option">
                         <label class="label-puro">Origem</label>
-                        <select id="catRenda" class="form-control-puro">
+                        <select id="catRenda" class="modal-dashboard-input">
                             <option value="Salário">💰 Salário</option>
                             <option value="Extra">🌟 Renda Extra</option>
                             <option value="Investimento">📈 Rendimento</option>
@@ -393,12 +808,11 @@
 
                     <div>
                         <label class="label-puro">Valor</label>
-                        <input type="number" id="valRenda" class="form-control-puro" placeholder="0,00">
+                        <input type="number" id="valRenda" class="modal-dashboard-input" placeholder="0,00">
                     </div>
 
                     <div>
-                        <button type="submit" id="btnSalvarRenda"
-                            class="modal-dashboard-btn-save color-btn-renda">
+                        <button type="submit" id="btnSalvarRenda" class="modal-dashboard-btn-save color-btn-renda">
                             CONFIRMAR ENTRADA
                         </button>
                     </div>
@@ -420,79 +834,28 @@
                 <form onsubmit="event.preventDefault(); enviar('reserva');" class="modal-dashboard-inputs-field">
                     <div>
                         <label class="label-puro">Objetivo</label>
-                        <input type="text" id="descReserva" class="form-control-puro"
+                        <input type="text" id="descReserva" class="modal-dashboard-input"
                             placeholder="Ex: Viagem, Carro...">
                     </div>
 
                     <div>
                         <label class="label-puro">Valor R$</label>
-                        <input type="number" id="valReserva" class="form-control-puro" placeholder="0,00">
+                        <input type="number" id="valReserva" class="modal-dashboard-input" placeholder="0,00">
                     </div>
                     <button type="submit" id="btnSalvarReserva"
                         class="modal-dashboard-btn-save color-btn-reserva">GUARDAR</button>
                 </form>
             </section>
         </div>
-
-        <div id="modalHistorico" class="aura-modal-overlay">
-            <div class="modal-dashboard-card historico-expandido">
-                <div class="modal-dashboard-header">
-                    <div class="modal-dashboard-body-header">
-                        <h2 class="title-modals color-renda">Extrato Detalhado</h2>
-                        <button onclick="fecharModal('modalHistorico')" class="modal-dashboard-btn-close">✕</button>
-                    </div>
-                    <p>Movimentações do mês selecionado</p>
-                </div>
-
-                <div class="scroll-extract">
-                    <div id="tabelaGastosBody" class="lista-extrato-moderna">
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <template id="temp-linha-gasto">
-            <div class="extrato-item">
-                <div class="extrato-lado-esquerdo">
-                    <span class="extrato-dia"></span>
-                    <div class="extrato-detalhes">
-                        <strong class="td-principal"></strong>
-                        <span class="td-sub"></span>
-                    </div>
-                </div>
-
-                <div class="extrato-lado-direito">
-                    <div class="extrato-valores">
-                        <span class="td-valor-gasto"></span>
-                        <div class="extrato-badges">
-                            <span class="badge-cat-pura"></span>
-                            <span class="badge-user-pura"></span>
-                        </div>
-                    </div>
-                    <button class="btn-delete-small">×</button>
-                </div>
-            </div>
-        </template>
-
-        <template id="temp-reserva">
-            <div class="reserva-item-pura">
-                <div class="reserva-info">
-                    <span class="reserva-nome"></span>
-                    <span class="reserva-tag">Acumulado</span>
-                </div>
-                <div class="reserva-acoes">
-                    <span class="reserva-valor-num"></span>
-                    <button class="btn-delete-small">×</button>
-                </div>
-            </div>
-        </template>
     </main>
 
+    <script type="module" src="../../js/main.js"></script>
 
+    <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script type="module" src="../../config.js"></script>
-    <script type="module" src="../../js/dashboard/dashboard.js"></script>
+    <!--<script type="module" src="../../js/dashboard/dashboard.js"></script>-->
 </body>
 
 </html>
